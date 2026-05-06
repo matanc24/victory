@@ -13,123 +13,34 @@
   <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body {
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Heebo", "Arial Hebrew", sans-serif;
-      background: #f5f5f7;
-      color: #1d1d1f;
-      min-height: 100vh;
-      min-height: 100dvh;
+      background: #f5f5f7; color: #1d1d1f;
+      min-height: 100vh; min-height: 100dvh;
       -webkit-font-smoothing: antialiased;
     }
-    body {
-      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-    }
-    .app {
-      max-width: 520px;
-      margin: 0 auto;
-      padding: 1rem 1rem 2rem;
-    }
-    h1 {
-      font-size: 22px;
-      font-weight: 600;
-      margin: 0.5rem 0 1.25rem;
-      text-align: center;
-    }
-    .card {
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 1.25rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-    }
-    .card-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: #6e6e73;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin: 0 0 0.75rem;
-    }
-    .tabs {
-      display: flex;
-      background: #e8e8ed;
-      border-radius: 10px;
-      padding: 3px;
-      margin-bottom: 1rem;
-    }
-    .tab {
-      flex: 1;
-      padding: 8px 12px;
-      text-align: center;
-      font-size: 14px;
-      font-weight: 500;
-      color: #6e6e73;
-      border-radius: 7px;
-      cursor: pointer;
-      transition: all 0.15s;
-      border: none;
-      background: transparent;
-      font-family: inherit;
-    }
-    .tab.active {
-      background: #ffffff;
-      color: #1d1d1f;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    }
+    body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+    .app { max-width: 520px; margin: 0 auto; padding: 1rem 1rem 2rem; }
+    h1 { font-size: 22px; font-weight: 600; margin: 0.5rem 0 1.25rem; text-align: center; }
+    .card { background: #ffffff; border-radius: 16px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+    .card-title { font-size: 13px; font-weight: 600; color: #6e6e73; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 0.75rem; }
+    .tabs { display: flex; background: #e8e8ed; border-radius: 10px; padding: 3px; margin-bottom: 1rem; }
+    .tab { flex: 1; padding: 8px 12px; text-align: center; font-size: 14px; font-weight: 500; color: #6e6e73; border-radius: 7px; cursor: pointer; transition: all 0.15s; border: none; background: transparent; font-family: inherit; }
+    .tab.active { background: #ffffff; color: #1d1d1f; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
     .input-row { margin-bottom: 1rem; }
-    .input-row label {
-      display: block;
-      font-size: 13px;
-      color: #6e6e73;
-      margin-bottom: 6px;
+    .input-row label { display: block; font-size: 13px; color: #6e6e73; margin-bottom: 6px; }
+    input[type="number"], input[type="text"], input[type="password"] {
+      width: 100%; font-size: 20px; padding: 12px 14px; border: 1px solid #d2d2d7; border-radius: 10px;
+      background: #ffffff; text-align: center; font-family: inherit; color: #1d1d1f; outline: none; transition: border-color 0.15s;
     }
-    input[type="number"], input[type="text"] {
-      width: 100%;
-      font-size: 20px;
-      padding: 12px 14px;
-      border: 1px solid #d2d2d7;
-      border-radius: 10px;
-      background: #ffffff;
-      text-align: center;
-      font-family: inherit;
-      color: #1d1d1f;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    input:focus {
-      border-color: #007aff;
-      box-shadow: 0 0 0 3px rgba(0,122,255,0.15);
-    }
-    input[type="number"]::-webkit-outer-spin-button,
-    input[type="number"]::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
+    input:focus { border-color: #007aff; box-shadow: 0 0 0 3px rgba(0,122,255,0.15); }
+    input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     input[type="number"] { -moz-appearance: textfield; }
 
-    .stats-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 0.75rem;
-    }
-    .stat {
-      background: #f5f5f7;
-      border-radius: 12px;
-      padding: 14px;
-      text-align: center;
-    }
-    .stat-label {
-      font-size: 12px;
-      color: #6e6e73;
-      margin-bottom: 4px;
-    }
-    .stat-value {
-      font-size: 26px;
-      font-weight: 600;
-      color: #1d1d1f;
-    }
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 0.75rem; }
+    .stat { background: #f5f5f7; border-radius: 12px; padding: 14px; text-align: center; }
+    .stat-label { font-size: 12px; color: #6e6e73; margin-bottom: 4px; }
+    .stat-value { font-size: 26px; font-weight: 600; color: #1d1d1f; }
     .stat.success { background: #d1f5e0; }
     .stat.success .stat-value { color: #0e7c3a; }
     .stat.warning { background: #ffefd5; }
@@ -137,255 +48,67 @@
     .stat.danger { background: #ffe0e0; }
     .stat.danger .stat-value { color: #c62828; }
 
-    .alt {
-      background: #f5f5f7;
-      border-radius: 10px;
-      padding: 10px 12px;
-      font-size: 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-    }
+    .alt { background: #f5f5f7; border-radius: 10px; padding: 10px 12px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
     .alt-meta { color: #6e6e73; font-size: 13px; }
-    .hint {
-      font-size: 13px;
-      color: #6e6e73;
-      text-align: center;
-      margin-top: 0.75rem;
-    }
-    .empty {
-      text-align: center;
-      color: #86868b;
-      font-size: 14px;
-      padding: 1.5rem 0;
-    }
+    .hint { font-size: 13px; color: #6e6e73; text-align: center; margin-top: 0.75rem; }
+    .empty { text-align: center; color: #86868b; font-size: 14px; padding: 1.5rem 0; }
 
-    .btn {
-      width: 100%;
-      padding: 12px;
-      font-size: 15px;
-      font-weight: 500;
-      border: none;
-      border-radius: 10px;
-      background: #007aff;
-      color: white;
-      cursor: pointer;
-      font-family: inherit;
-      margin-top: 0.5rem;
-      transition: opacity 0.15s;
-    }
+    .btn { width: 100%; padding: 12px; font-size: 15px; font-weight: 500; border: none; border-radius: 10px; background: #007aff; color: white; cursor: pointer; font-family: inherit; margin-top: 0.5rem; transition: opacity 0.15s; }
     .btn:active { opacity: 0.7; }
-    .btn:disabled {
-      background: #d2d2d7;
-      color: #86868b;
-      cursor: not-allowed;
-    }
-    .btn-secondary {
-      background: #f5f5f7;
-      color: #007aff;
-    }
+    .btn:disabled { background: #d2d2d7; color: #86868b; cursor: not-allowed; }
+    .btn-secondary { background: #f5f5f7; color: #007aff; }
     .btn-row { display: flex; gap: 8px; }
     .btn-row .btn { flex: 1; }
 
-    .total-bar {
-      background: #007aff;
-      color: white;
-      border-radius: 12px;
-      padding: 12px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 1rem;
-      font-size: 15px;
-    }
+    .total-bar { background: #007aff; color: white; border-radius: 12px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; font-size: 15px; }
     .total-bar-value { font-size: 20px; font-weight: 600; }
 
-    .insufficient {
-      background: #fff4e5;
-      color: #b25700;
-      padding: 10px 12px;
-      border-radius: 10px;
-      font-size: 13px;
-      margin-top: 0.75rem;
-      text-align: center;
-    }
+    .insufficient { background: #fff4e5; color: #b25700; padding: 10px 12px; border-radius: 10px; font-size: 13px; margin-top: 0.75rem; text-align: center; }
 
-    .voucher-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px;
-      background: #f5f5f7;
-      border-radius: 12px;
-      margin-bottom: 8px;
-    }
-    .voucher-badge {
-      flex-shrink: 0;
-      width: 52px;
-      height: 52px;
-      border-radius: 12px;
-      background: #ff8a00;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 16px;
-    }
+    .voucher-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: #f5f5f7; border-radius: 12px; margin-bottom: 8px; }
+    .voucher-badge { flex-shrink: 0; width: 52px; height: 52px; border-radius: 12px; background: #ff8a00; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; }
     .voucher-badge.v40 { background: #d97706; }
     .voucher-badge.v30 { background: #16a34a; }
     .voucher-badge.v20 { background: #4a90e2; }
     .voucher-info { flex: 1; min-width: 0; }
-    .voucher-code {
-      font-family: ui-monospace, "SF Mono", Menlo, monospace;
-      font-size: 15px;
-      font-weight: 500;
-      letter-spacing: 0.3px;
-      direction: ltr;
-      text-align: left;
-      color: #1d1d1f;
-      cursor: pointer;
-      user-select: all;
-      -webkit-user-select: all;
-    }
-    .voucher-meta {
-      font-size: 12px;
-      color: #6e6e73;
-      margin-top: 2px;
-    }
+    .voucher-code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 15px; font-weight: 500; letter-spacing: 0.3px; direction: ltr; text-align: left; color: #1d1d1f; cursor: pointer; user-select: all; -webkit-user-select: all; }
+    .voucher-meta { font-size: 12px; color: #6e6e73; margin-top: 2px; }
     .voucher-actions { display: flex; gap: 4px; }
-    .icon-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      border: none;
-      background: #ffffff;
-      color: #6e6e73;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: inherit;
-      padding: 0;
-      font-size: 16px;
-    }
+    .icon-btn { width: 36px; height: 36px; border-radius: 50%; border: none; background: #ffffff; color: #6e6e73; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: inherit; padding: 0; font-size: 16px; }
     .icon-btn:active { background: #e8e8ed; }
     .icon-btn.danger { color: #c62828; }
 
-    .add-options {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 0.5rem;
-    }
-    .add-btn {
-      padding: 14px;
-      border-radius: 12px;
-      border: 1px dashed #d2d2d7;
-      background: transparent;
-      color: #007aff;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      font-family: inherit;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
+    .add-btn { padding: 14px; border-radius: 12px; border: 1px dashed #d2d2d7; background: transparent; color: #007aff; font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 6px; }
     .add-btn:active { background: #f5f5f7; }
 
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.4);
-      display: none;
-      align-items: flex-end;
-      justify-content: center;
-      z-index: 100;
-      padding: 1rem;
-    }
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: flex-end; justify-content: center; z-index: 100; padding: 1rem; }
     .modal-backdrop.show { display: flex; }
-    .modal {
-      background: #ffffff;
-      border-radius: 16px;
-      width: 100%;
-      max-width: 480px;
-      padding: 1.25rem;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-    .modal-title {
-      font-size: 17px;
-      font-weight: 600;
-      margin: 0 0 1rem;
-      text-align: center;
-    }
+    .modal-backdrop.center { align-items: center; }
+    .modal { background: #ffffff; border-radius: 16px; width: 100%; max-width: 480px; padding: 1.25rem; max-height: 90vh; overflow-y: auto; }
+    .modal-title { font-size: 17px; font-weight: 600; margin: 0 0 1rem; text-align: center; }
 
-    .ocr-status {
-      text-align: center;
-      padding: 1rem;
-      font-size: 14px;
-      color: #6e6e73;
-    }
-    .spinner {
-      display: inline-block;
-      width: 18px;
-      height: 18px;
-      border: 2px solid #d2d2d7;
-      border-top-color: #007aff;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      vertical-align: middle;
-      margin-left: 6px;
-    }
+    .ocr-status { text-align: center; padding: 1rem; font-size: 14px; color: #6e6e73; }
+    .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid #d2d2d7; border-top-color: #007aff; border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-left: 6px; }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .preview-image { max-width: 100%; max-height: 200px; border-radius: 8px; margin: 0.5rem auto; display: block; }
+    select.value-select { width: 100%; font-size: 18px; padding: 12px; border: 1px solid #d2d2d7; border-radius: 10px; font-family: inherit; background: #fff; color: #1d1d1f; }
 
-    .preview-image {
-      max-width: 100%;
-      max-height: 200px;
-      border-radius: 8px;
-      margin: 0.5rem auto;
-      display: block;
-    }
-
-    select.value-select {
-      width: 100%;
-      font-size: 18px;
-      padding: 12px;
-      border: 1px solid #d2d2d7;
-      border-radius: 10px;
-      font-family: inherit;
-      background: #fff;
-      color: #1d1d1f;
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #1d1d1f;
-      color: white;
-      padding: 10px 18px;
-      border-radius: 22px;
-      font-size: 14px;
-      z-index: 200;
-      opacity: 0;
-      transition: opacity 0.2s;
-      pointer-events: none;
-    }
+    .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1d1d1f; color: white; padding: 10px 18px; border-radius: 22px; font-size: 14px; z-index: 200; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
     .toast.show { opacity: 1; }
 
-    .group-header {
-      font-size: 14px;
-      font-weight: 600;
-      color: #6e6e73;
-      margin: 1rem 0 0.5rem;
-      padding: 0 4px;
-    }
+    .group-header { font-size: 14px; font-weight: 600; color: #6e6e73; margin: 1rem 0 0.5rem; padding: 0 4px; }
     .group-header:first-child { margin-top: 0; }
+
+    .sync-indicator { position: fixed; top: env(safe-area-inset-top); right: 12px; background: rgba(0,0,0,0.7); color: white; font-size: 11px; padding: 4px 10px; border-radius: 12px; z-index: 50; opacity: 0; transition: opacity 0.2s; pointer-events: none; margin-top: 8px; }
+    .sync-indicator.show { opacity: 1; }
+    .sync-indicator.error { background: #c62828; }
+
+    .login-screen { max-width: 400px; margin: 5rem auto; padding: 1rem; text-align: center; }
+    .login-screen h2 { font-size: 22px; margin: 0 0 0.5rem; }
+    .login-screen p { color: #6e6e73; font-size: 14px; margin: 0 0 1.5rem; }
+    .error-msg { color: #c62828; font-size: 13px; margin-top: 0.5rem; min-height: 18px; }
+
+    .config-warning { background: #fff4e5; color: #b25700; padding: 1rem; border-radius: 12px; font-size: 14px; margin-bottom: 1rem; line-height: 1.5; }
 
     @media (prefers-color-scheme: dark) {
       html, body { background: #000000; color: #f5f5f7; }
@@ -394,7 +117,7 @@
       .tabs { background: #2c2c2e; }
       .tab { color: #98989d; }
       .tab.active { background: #48484a; color: #ffffff; }
-      input[type="number"], input[type="text"], select.value-select { background: #2c2c2e; border-color: #38383a; color: #ffffff; }
+      input[type="number"], input[type="text"], input[type="password"], select.value-select { background: #2c2c2e; border-color: #38383a; color: #ffffff; }
       input:focus { border-color: #0a84ff; }
       .stat { background: #2c2c2e; }
       .stat-label { color: #98989d; }
@@ -417,11 +140,37 @@
       .add-btn:active { background: #2c2c2e; }
       .modal { background: #1c1c1e; }
       .group-header { color: #98989d; }
+      .config-warning { background: #3d2a05; color: #fbbf24; }
     }
   </style>
 </head>
 <body>
-  <div class="app">
+  <div class="sync-indicator" id="sync-indicator"></div>
+
+  <!-- Login screen -->
+  <div id="login-screen" class="login-screen" style="display: none;">
+    <h1>🎫 מחשבון שוברים</h1>
+    <div id="config-warning" class="config-warning" style="display: none;">
+      <strong>הגדרה לא הושלמה</strong><br>
+      צריך להגדיר את כתובת ה-Supabase והמפתח בקוד ה-HTML. חפש את הסימון <code>YOUR_SUPABASE_URL</code> בקובץ.
+    </div>
+    <div id="login-content" style="display: none;">
+      <h2 id="login-title">הזן סיסמה</h2>
+      <p id="login-subtitle">הסיסמה משמשת להצפנה ולהגנה על השוברים שלך</p>
+      <div class="input-row">
+        <input id="password-input" type="password" placeholder="סיסמה" autocomplete="current-password">
+      </div>
+      <div id="password-confirm-row" class="input-row" style="display: none;">
+        <input id="password-confirm" type="password" placeholder="אימות סיסמה" autocomplete="new-password">
+      </div>
+      <div class="error-msg" id="login-error"></div>
+      <button class="btn" id="login-btn">היכנס</button>
+      <button class="btn btn-secondary" id="logout-btn" style="display: none; margin-top: 1rem;">איפוס סיסמה</button>
+    </div>
+  </div>
+
+  <!-- Main app (hidden until login) -->
+  <div class="app" id="main-app" style="display: none;">
     <h1>מחשבון שוברים</h1>
 
     <div class="tabs">
@@ -450,13 +199,9 @@
           </div>
 
           <div id="insufficient-warning" style="display: none;" class="insufficient"></div>
-
           <div id="vouchers-to-use" style="margin-top: 1rem;"></div>
-
           <button class="btn" id="use-vouchers" style="display: none; margin-top: 0.75rem;">השתמשתי - הסר מהמלאי</button>
-
           <div id="alternatives" style="margin-top: 1rem;"></div>
-
           <div class="hint" id="hint"></div>
         </div>
 
@@ -480,17 +225,17 @@
       <div class="card">
         <div class="card-title">השוברים שלי</div>
         <div id="vouchers-list"></div>
-
         <div class="total-bar">
           <span>סה"כ במלאי</span>
           <span class="total-bar-value" id="inv-total">0 ₪</span>
         </div>
-
         <button class="btn btn-secondary" id="reset-inv" style="margin-top: 1rem;">איפוס מלאי</button>
+        <button class="btn btn-secondary" id="lock-app" style="margin-top: 0.5rem;">🔒 נעל אפליקציה</button>
       </div>
     </div>
   </div>
 
+  <!-- OCR Modal -->
   <div class="modal-backdrop" id="ocr-modal">
     <div class="modal">
       <div class="modal-title" id="ocr-title">סריקת שובר</div>
@@ -520,6 +265,7 @@
     </div>
   </div>
 
+  <!-- Manual Add Modal -->
   <div class="modal-backdrop" id="manual-modal">
     <div class="modal">
       <div class="modal-title">הוספת שובר ידנית</div>
@@ -543,13 +289,98 @@
     </div>
   </div>
 
+  <!-- Migration Modal -->
+  <div class="modal-backdrop center" id="migration-modal">
+    <div class="modal">
+      <div class="modal-title">העברת מלאי קיים</div>
+      <p style="font-size: 14px; line-height: 1.5; color: #6e6e73;">
+        זוהו <span id="migration-count">0</span> שוברים במכשיר הזה. האם להעלות אותם לדאטהבייס המוצפן?
+      </p>
+      <div class="btn-row" style="margin-top:1rem;">
+        <button class="btn btn-secondary" id="migration-skip">דלג</button>
+        <button class="btn" id="migration-go">העלה</button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js"></script>
   <script>
-    const STORAGE_KEY = 'voucher_inventory_v2';
+    // ===================================================================
+    //  ⚠️  הגדרות Supabase - מלא כאן את הערכים שלך  ⚠️
+    // ===================================================================
+    const SUPABASE_URL = 'https://dcfesafpgblejztpseyx.supabase.co';   // למשל: 'https://abcdefgh.supabase.co'
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjZmVzYWZwZ2JsZWp6dHBzZXl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwODQ1ODIsImV4cCI6MjA5MzY2MDU4Mn0.slFWlA5rUUz2l4wR8KzchQupn9Mzz2MPEee3wOH4o3s';   // ה-anon public key (מתחיל ב-eyJ...)
+    // ===================================================================
 
-    function loadVouchers() {
+    const STORAGE_KEY = 'voucher_inventory_v3';
+    const PASSWORD_HASH_KEY = 'voucher_pwhash_v1';
+    const SESSION_KEY = 'voucher_session_v1';
+    const OLD_STORAGE_KEY = 'voucher_inventory_v2';
+
+    // Encryption helpers using Web Crypto API
+    async function deriveKey(password, salt) {
+      const enc = new TextEncoder();
+      const baseKey = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+      return crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt: enc.encode(salt), iterations: 100000, hash: 'SHA-256' },
+        baseKey,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['encrypt', 'decrypt']
+      );
+    }
+
+    async function encryptText(text, key) {
+      if (!text) return '';
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const enc = new TextEncoder();
+      const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(text));
+      const ivB64 = btoa(String.fromCharCode(...iv));
+      const ctB64 = btoa(String.fromCharCode(...new Uint8Array(ct)));
+      return ivB64 + ':' + ctB64;
+    }
+
+    async function decryptText(encrypted, key) {
+      if (!encrypted) return '';
+      try {
+        const [ivB64, ctB64] = encrypted.split(':');
+        const iv = Uint8Array.from(atob(ivB64), c => c.charCodeAt(0));
+        const ct = Uint8Array.from(atob(ctB64), c => c.charCodeAt(0));
+        const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ct);
+        return new TextDecoder().decode(pt);
+      } catch (e) {
+        return '[שגיאת פענוח]';
+      }
+    }
+
+    async function hashPassword(password) {
+      const enc = new TextEncoder();
+      const data = enc.encode(password + ':voucher-app-salt-v1');
+      const hash = await crypto.subtle.digest('SHA-256', data);
+      return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    // App state
+    let cryptoKey = null;
+    let vouchers = [];
+    let currentBest = null;
+    let isOnline = navigator.onLine;
+
+    // ===== Sync indicator =====
+    let syncTimer = null;
+    function showSync(msg, isError) {
+      const el = document.getElementById('sync-indicator');
+      el.textContent = msg;
+      el.classList.toggle('error', !!isError);
+      el.classList.add('show');
+      clearTimeout(syncTimer);
+      syncTimer = setTimeout(() => el.classList.remove('show'), isError ? 4000 : 1500);
+    }
+
+    // ===== Local cache =====
+    function loadCache() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (!raw) return [];
@@ -558,27 +389,228 @@
         return parsed.filter(v => v && [50, 40, 30, 20].includes(v.value));
       } catch (e) { return []; }
     }
-    function saveVouchers(vs) {
+    function saveCache(vs) {
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(vs)); } catch (e) {}
     }
 
-    let vouchers = loadVouchers();
-    let currentBest = null;
-
-    // Migration v1 -> v2
-    (function migrate() {
-      const oldRaw = localStorage.getItem('voucher_inventory_v1');
-      if (oldRaw && vouchers.length === 0) {
-        try {
-          const old = JSON.parse(oldRaw);
-          const now = Date.now();
-          for (let i = 0; i < (old['50'] || 0); i++) vouchers.push({ id: 'mig-50-'+now+'-'+i, code: '', value: 50, addedAt: now });
-          for (let i = 0; i < (old['20'] || 0); i++) vouchers.push({ id: 'mig-20-'+now+'-'+i, code: '', value: 20, addedAt: now });
-          if (vouchers.length > 0) { saveVouchers(vouchers); localStorage.removeItem('voucher_inventory_v1'); }
-        } catch (e) {}
+    // ===== Supabase API =====
+    async function sbRequest(method, path, body) {
+      const headers = {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      };
+      const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
+        method, headers, body: body ? JSON.stringify(body) : undefined
+      });
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error('Supabase ' + res.status + ': ' + txt);
       }
-    })();
+      const text = await res.text();
+      return text ? JSON.parse(text) : null;
+    }
 
+    // ===== Sync logic =====
+    async function fetchFromSupabase() {
+      const rows = await sbRequest('GET', 'vouchers?select=*&order=added_at.asc');
+      const decrypted = [];
+      for (const row of rows) {
+        const code = row.code ? await decryptText(row.code, cryptoKey) : '';
+        decrypted.push({
+          id: row.id,
+          code: code,
+          value: row.value,
+          addedAt: row.added_at
+        });
+      }
+      return decrypted;
+    }
+
+    async function pushVoucher(v) {
+      const encryptedCode = v.code ? await encryptText(v.code, cryptoKey) : null;
+      await sbRequest('POST', 'vouchers', {
+        id: v.id,
+        code: encryptedCode,
+        value: v.value,
+        added_at: v.addedAt
+      });
+    }
+
+    async function deleteVoucher(id) {
+      await sbRequest('DELETE', 'vouchers?id=eq.' + encodeURIComponent(id));
+    }
+
+    async function deleteAllVouchers() {
+      // Use a filter that always matches (id != impossible value)
+      await sbRequest('DELETE', 'vouchers?id=neq.__impossible__');
+    }
+
+    async function syncFromCloud() {
+      if (!isOnline) return;
+      try {
+        showSync('🔄 מסנכרן...');
+        const remote = await fetchFromSupabase();
+        vouchers = remote;
+        saveCache(vouchers);
+        renderInventory();
+        renderCalculator();
+        showSync('✓ מסונכרן');
+      } catch (err) {
+        console.error(err);
+        showSync('שגיאת סנכרון', true);
+      }
+    }
+
+    // ===== Online/offline =====
+    window.addEventListener('online', () => { isOnline = true; syncFromCloud(); });
+    window.addEventListener('offline', () => { isOnline = false; });
+
+    // ===== Login flow =====
+    const loginScreen = document.getElementById('login-screen');
+    const mainApp = document.getElementById('main-app');
+    const passwordInput = document.getElementById('password-input');
+    const passwordConfirm = document.getElementById('password-confirm');
+    const passwordConfirmRow = document.getElementById('password-confirm-row');
+    const loginTitle = document.getElementById('login-title');
+    const loginSubtitle = document.getElementById('login-subtitle');
+    const loginError = document.getElementById('login-error');
+    const loginBtn = document.getElementById('login-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    function checkConfig() {
+      if (SUPABASE_URL === 'YOUR_SUPABASE_URL' || SUPABASE_KEY === 'YOUR_SUPABASE_KEY' ||
+          !SUPABASE_URL || !SUPABASE_KEY) {
+        document.getElementById('config-warning').style.display = 'block';
+        document.getElementById('login-content').style.display = 'none';
+        return false;
+      }
+      document.getElementById('login-content').style.display = 'block';
+      return true;
+    }
+
+    async function showLogin() {
+      loginScreen.style.display = 'block';
+      mainApp.style.display = 'none';
+      if (!checkConfig()) return;
+
+      const existingHash = localStorage.getItem(PASSWORD_HASH_KEY);
+      if (existingHash) {
+        loginTitle.textContent = 'הזן סיסמה';
+        loginSubtitle.textContent = 'נא הזן את הסיסמה שיצרת';
+        passwordConfirmRow.style.display = 'none';
+        logoutBtn.style.display = 'block';
+      } else {
+        loginTitle.textContent = 'יצירת סיסמה';
+        loginSubtitle.textContent = 'בחר סיסמה חזקה. היא תשמש להצפנת השוברים שלך. אם תשכח אותה - לא תוכל לפענח את הנתונים.';
+        passwordConfirmRow.style.display = 'block';
+        logoutBtn.style.display = 'none';
+      }
+      passwordInput.value = '';
+      passwordConfirm.value = '';
+      loginError.textContent = '';
+      passwordInput.focus();
+    }
+
+    function showApp() {
+      loginScreen.style.display = 'none';
+      mainApp.style.display = 'block';
+    }
+
+    async function attemptLogin() {
+      loginError.textContent = '';
+      const pwd = passwordInput.value;
+      if (pwd.length < 4) {
+        loginError.textContent = 'הסיסמה קצרה מדי (לפחות 4 תווים)';
+        return;
+      }
+
+      const existingHash = localStorage.getItem(PASSWORD_HASH_KEY);
+
+      if (existingHash) {
+        // Login
+        const hash = await hashPassword(pwd);
+        if (hash !== existingHash) {
+          loginError.textContent = 'סיסמה שגויה';
+          return;
+        }
+        cryptoKey = await deriveKey(pwd, 'voucher-encryption-salt');
+        sessionStorage.setItem(SESSION_KEY, '1');
+        showApp();
+        // Initial render from cache, then sync
+        vouchers = loadCache();
+        renderInventory();
+        renderCalculator();
+        await syncFromCloud();
+      } else {
+        // First-time setup
+        if (pwd !== passwordConfirm.value) {
+          loginError.textContent = 'הסיסמאות לא תואמות';
+          return;
+        }
+        const hash = await hashPassword(pwd);
+        localStorage.setItem(PASSWORD_HASH_KEY, hash);
+        cryptoKey = await deriveKey(pwd, 'voucher-encryption-salt');
+        sessionStorage.setItem(SESSION_KEY, '1');
+        showApp();
+
+        // Check for old data to migrate
+        const oldRaw = localStorage.getItem(OLD_STORAGE_KEY);
+        if (oldRaw) {
+          try {
+            const oldVouchers = JSON.parse(oldRaw);
+            if (Array.isArray(oldVouchers) && oldVouchers.length > 0) {
+              document.getElementById('migration-count').textContent = oldVouchers.length;
+              document.getElementById('migration-modal').classList.add('show');
+              document.getElementById('migration-go').onclick = async () => {
+                document.getElementById('migration-modal').classList.remove('show');
+                showSync('🔄 מעלה ' + oldVouchers.length + ' שוברים...');
+                let added = 0;
+                for (const v of oldVouchers) {
+                  try {
+                    const newV = {
+                      id: v.id || ('v-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8)),
+                      code: v.code || '',
+                      value: v.value,
+                      addedAt: v.addedAt || Date.now()
+                    };
+                    await pushVoucher(newV);
+                    vouchers.push(newV);
+                    added++;
+                  } catch (e) { console.error(e); }
+                }
+                saveCache(vouchers);
+                localStorage.removeItem(OLD_STORAGE_KEY);
+                renderInventory();
+                renderCalculator();
+                showSync('✓ הועלו ' + added + ' שוברים');
+              };
+              document.getElementById('migration-skip').onclick = () => {
+                document.getElementById('migration-modal').classList.remove('show');
+                localStorage.removeItem(OLD_STORAGE_KEY);
+              };
+              return;
+            }
+          } catch (e) {}
+        }
+        await syncFromCloud();
+      }
+    }
+
+    loginBtn.addEventListener('click', attemptLogin);
+    passwordInput.addEventListener('keydown', e => { if (e.key === 'Enter') attemptLogin(); });
+    passwordConfirm.addEventListener('keydown', e => { if (e.key === 'Enter') attemptLogin(); });
+
+    logoutBtn.addEventListener('click', () => {
+      if (!confirm('איפוס סיסמה ימחק את הסיסמה השמורה במכשיר הזה. הנתונים בדאטהבייס לא יימחקו, אבל לא תוכל לפענח אותם בלי הסיסמה המקורית. להמשיך?')) return;
+      localStorage.removeItem(PASSWORD_HASH_KEY);
+      localStorage.removeItem(STORAGE_KEY);
+      sessionStorage.removeItem(SESSION_KEY);
+      showLogin();
+    });
+
+    // ===== Tab switching =====
     document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -589,6 +621,15 @@
       });
     });
 
+    // ===== Lock =====
+    document.getElementById('lock-app').addEventListener('click', () => {
+      sessionStorage.removeItem(SESSION_KEY);
+      cryptoKey = null;
+      vouchers = [];
+      showLogin();
+    });
+
+    // ===== Toast =====
     let toastTimer = null;
     function toast(msg) {
       const el = document.getElementById('toast');
@@ -598,11 +639,10 @@
       toastTimer = setTimeout(() => el.classList.remove('show'), 2000);
     }
 
+    // ===== Voucher logic =====
     function getCounts() {
       const counts = { '50': 0, '40': 0, '30': 0, '20': 0 };
-      for (const v of vouchers) {
-        if (counts[v.value] !== undefined) counts[v.value]++;
-      }
+      for (const v of vouchers) { if (counts[v.value] !== undefined) counts[v.value]++; }
       return counts;
     }
     function getSortedByAge() {
@@ -639,7 +679,6 @@
         const tA = a.fifties + a.forties + a.thirties + a.twenties;
         const tB = b.fifties + b.forties + b.thirties + b.twenties;
         if (tA !== tB) return tA - tB;
-        // Prefer larger denominations
         if (b.fifties !== a.fifties) return b.fifties - a.fifties;
         if (b.forties !== a.forties) return b.forties - a.forties;
         return b.thirties - a.thirties;
@@ -688,10 +727,7 @@
       const picked = [];
       const need = { 50: combo.fifties, 40: combo.forties, 30: combo.thirties, 20: combo.twenties };
       for (const v of sorted) {
-        if (need[v.value] > 0) {
-          picked.push(v);
-          need[v.value]--;
-        }
+        if (need[v.value] > 0) { picked.push(v); need[v.value]--; }
         if (need[50] === 0 && need[40] === 0 && need[30] === 0 && need[20] === 0) break;
       }
       return picked;
@@ -705,8 +741,7 @@
         <div class="voucher-actions">
           ${v.code ? `<button class="icon-btn" data-copy="${v.code}" title="העתק">⎘</button>` : ''}
           <button class="icon-btn danger" data-delete="${v.id}" title="מחק">×</button>
-        </div>
-      ` : '';
+        </div>` : '';
       return `
         <div class="voucher-item">
           <div class="voucher-badge ${cls}">${v.value}₪</div>
@@ -715,8 +750,7 @@
             <div class="voucher-meta">${date}</div>
           </div>
           ${actionsHtml}
-        </div>
-      `;
+        </div>`;
     }
 
     const amountInput = document.getElementById('amount');
@@ -753,7 +787,6 @@
       const best = combos[0] || { fifties: 0, forties: 0, thirties: 0, twenties: 0, covered: 0, pocket: amount };
       currentBest = best;
 
-      // Render breakdown only for denominations actually used
       const breakdown = document.getElementById('value-breakdown');
       const usedValues = [];
       if (best.fifties > 0) usedValues.push({ label: '50 ₪', count: best.fifties });
@@ -792,7 +825,6 @@
           let html = '<div style="font-size: 13px; color: #6e6e73; margin-bottom: 8px;">השוברים הספציפיים להשתמש (FIFO - הישנים קודם):</div>';
           for (const v of picked) html += renderVoucherItem(v, false);
           vouchersToUseEl.innerHTML = html;
-          // Wire copy buttons in calc area too
           vouchersToUseEl.querySelectorAll('[data-copy]').forEach(btn => {
             btn.addEventListener('click', async () => {
               try { await navigator.clipboard.writeText(btn.dataset.copy); toast('הקוד הועתק'); } catch (e) { toast('לא הצלחתי להעתיק'); }
@@ -830,7 +862,6 @@
       const total = counts['50'] * 50 + counts['40'] * 40 + counts['30'] * 30 + counts['20'] * 20;
       document.getElementById('inv-total').textContent = total.toLocaleString('he-IL') + ' ₪';
 
-      // Summary card: only show denominations that exist
       const summaryStats = [];
       if (counts['50'] > 0) summaryStats.push({ label: 'שוברי 50', n: counts['50'] });
       if (counts['40'] > 0) summaryStats.push({ label: 'שוברי 40', n: counts['40'] });
@@ -842,9 +873,7 @@
         summaryHtml = '<div class="empty" style="padding: 0.5rem 0;">אין שוברים במלאי</div>';
       } else {
         summaryHtml = '<div class="stats-grid">';
-        for (const s of summaryStats) {
-          summaryHtml += `<div class="stat"><div class="stat-label">${s.label}</div><div class="stat-value">${s.n}</div></div>`;
-        }
+        for (const s of summaryStats) summaryHtml += `<div class="stat"><div class="stat-label">${s.label}</div><div class="stat-value">${s.n}</div></div>`;
         summaryHtml += '</div>';
       }
       summaryHtml += `<div class="hint" style="margin-top: 8px;">סה"כ ${total.toLocaleString('he-IL')} ₪ במלאי</div>`;
@@ -856,10 +885,7 @@
         return;
       }
       const sorted = getSortedByAge();
-      const groups = [50, 40, 30, 20].map(val => ({
-        val,
-        list: sorted.filter(v => v.value === val)
-      }));
+      const groups = [50, 40, 30, 20].map(val => ({ val, list: sorted.filter(v => v.value === val) }));
 
       let html = '';
       for (const g of groups) {
@@ -876,19 +902,25 @@
         });
       });
       listEl.querySelectorAll('[data-delete]').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', async () => {
           const id = btn.dataset.delete;
-          if (confirm('להסיר את השובר?')) {
+          if (!confirm('להסיר את השובר?')) return;
+          try {
+            await deleteVoucher(id);
             vouchers = vouchers.filter(v => v.id !== id);
-            saveVouchers(vouchers);
+            saveCache(vouchers);
             renderInventory();
             renderCalculator();
+            showSync('✓ נמחק');
+          } catch (err) {
+            console.error(err);
+            showSync('שגיאה במחיקה', true);
           }
         });
       });
     }
 
-    useBtn.addEventListener('click', () => {
+    useBtn.addEventListener('click', async () => {
       if (!currentBest) return;
       const counts = getCounts();
       if (currentBest.fifties > counts['50'] || currentBest.forties > counts['40'] ||
@@ -897,35 +929,52 @@
         return;
       }
       const picked = pickVouchersForCombo(currentBest);
-      const ids = new Set(picked.map(v => v.id));
-      vouchers = vouchers.filter(v => !ids.has(v.id));
-      saveVouchers(vouchers);
-      renderInventory();
-      amountInput.value = '';
-      results.style.display = 'none';
-      empty.style.display = 'block';
-      empty.textContent = '✓ ' + picked.length + ' שוברים הוסרו מהמלאי';
-      empty.style.color = '#0e7c3a';
-      setTimeout(() => {
-        empty.style.color = '';
-        empty.textContent = 'הכנס סכום כדי לראות את הצירוף הטוב ביותר';
-      }, 2500);
-    });
-
-    document.getElementById('reset-inv').addEventListener('click', () => {
-      if (confirm('לאפס את כל המלאי? פעולה זו תמחק את כל השוברים.')) {
-        vouchers = [];
-        saveVouchers(vouchers);
+      try {
+        showSync('🔄 מעדכן...');
+        for (const v of picked) {
+          await deleteVoucher(v.id);
+        }
+        const ids = new Set(picked.map(v => v.id));
+        vouchers = vouchers.filter(v => !ids.has(v.id));
+        saveCache(vouchers);
         renderInventory();
-        renderCalculator();
+        amountInput.value = '';
+        results.style.display = 'none';
+        empty.style.display = 'block';
+        empty.textContent = '✓ ' + picked.length + ' שוברים הוסרו מהמלאי';
+        empty.style.color = '#0e7c3a';
+        setTimeout(() => {
+          empty.style.color = '';
+          empty.textContent = 'הכנס סכום כדי לראות את הצירוף הטוב ביותר';
+        }, 2500);
+        showSync('✓ עודכן');
+      } catch (err) {
+        console.error(err);
+        showSync('שגיאה - נסה שוב', true);
       }
     });
 
-    // ==== File input ====
+    document.getElementById('reset-inv').addEventListener('click', async () => {
+      if (!confirm('לאפס את כל המלאי? פעולה זו תמחק את כל השוברים מהדאטהבייס.')) return;
+      try {
+        showSync('🔄 מוחק...');
+        await deleteAllVouchers();
+        vouchers = [];
+        saveCache(vouchers);
+        renderInventory();
+        renderCalculator();
+        showSync('✓ נמחקו');
+      } catch (err) {
+        console.error(err);
+        showSync('שגיאה - נסה שוב', true);
+      }
+    });
+
+    // ===== File input =====
     document.getElementById('btn-gallery').addEventListener('click', () => document.getElementById('file-gallery').click());
     document.getElementById('file-gallery').addEventListener('change', e => handleFiles(Array.from(e.target.files)));
 
-    // ==== OCR ====
+    // ===== OCR =====
     const ocrModal = document.getElementById('ocr-modal');
     const ocrPreview = document.getElementById('ocr-preview');
     const ocrStatus = document.getElementById('ocr-status');
@@ -935,14 +984,12 @@
     const ocrSave = document.getElementById('ocr-save');
     const ocrCancel = document.getElementById('ocr-cancel');
     const ocrSkip = document.getElementById('ocr-skip');
-    const ocrTitle = document.getElementById('ocr-title');
     const ocrBatchProgress = document.getElementById('ocr-batch-progress');
 
-    // Batch state
     let batchQueue = [];
     let batchIndex = 0;
     let batchAdded = 0;
-    let ocrWorker = null; // Reused across batch
+    let ocrWorker = null;
 
     function showOcrModal() {
       ocrModal.classList.add('show');
@@ -954,20 +1001,12 @@
       ocrModal.classList.remove('show');
       document.getElementById('file-gallery').value = '';
     }
-
     async function cleanupBatch() {
-      if (ocrWorker) {
-        try { await ocrWorker.terminate(); } catch (e) {}
-        ocrWorker = null;
-      }
-      batchQueue = [];
-      batchIndex = 0;
-      batchAdded = 0;
+      if (ocrWorker) { try { await ocrWorker.terminate(); } catch (e) {} ocrWorker = null; }
+      batchQueue = []; batchIndex = 0; batchAdded = 0;
       ocrSkip.style.display = 'none';
-      ocrTitle.textContent = 'סריקת שובר';
       ocrBatchProgress.style.display = 'none';
     }
-
     ocrCancel.addEventListener('click', async () => {
       hideOcrModal();
       const wasBatch = batchQueue.length > 1;
@@ -975,10 +1014,7 @@
       await cleanupBatch();
       if (wasBatch && added > 0) toast(`נוספו ${added} שוברים`);
     });
-
-    ocrSkip.addEventListener('click', () => {
-      processNextInBatch();
-    });
+    ocrSkip.addEventListener('click', () => { processNextInBatch(); });
 
     async function handleFiles(files) {
       if (!files || files.length === 0) return;
@@ -995,16 +1031,13 @@
         ocrBatchProgress.style.display = 'none';
       }
 
-      // Initialize worker once for the whole batch
       ocrStatus.innerHTML = '<span class="spinner"></span> טוען מנוע זיהוי טקסט...';
       try {
         ocrWorker = await Tesseract.createWorker(['heb', 'eng'], 1, {
           logger: m => {
             if (m.status === 'recognizing text') {
               const pct = Math.round(m.progress * 100);
-              const prefix = batchQueue.length > 1
-                ? `שובר ${batchIndex + 1}/${batchQueue.length} - `
-                : '';
+              const prefix = batchQueue.length > 1 ? `שובר ${batchIndex + 1}/${batchQueue.length} - ` : '';
               ocrStatus.innerHTML = `<span class="spinner"></span> ${prefix}מזהה טקסט... ${pct}%`;
             }
           }
@@ -1012,40 +1045,29 @@
       } catch (err) {
         console.error(err);
         ocrStatus.textContent = 'שגיאה בטעינת מנוע הזיהוי. אנא הקלד ידנית.';
-        ocrCode.value = '';
-        ocrValue.value = '50';
+        ocrCode.value = ''; ocrValue.value = '50';
         ocrResult.style.display = 'block';
         ocrSave.disabled = false;
         return;
       }
-
       processNextInBatch();
     }
 
     async function processNextInBatch() {
       if (batchIndex >= batchQueue.length) {
-        // Batch done
         const added = batchAdded;
         const total = batchQueue.length;
         await cleanupBatch();
         hideOcrModal();
-        if (total > 1) {
-          toast(`נוספו ${added} שוברים מתוך ${total}`);
-        } else if (added > 0) {
-          toast('שובר נוסף');
-        }
+        if (total > 1) toast(`נוספו ${added} שוברים מתוך ${total}`);
+        else if (added > 0) toast('שובר נוסף');
         return;
       }
 
       const file = batchQueue[batchIndex];
       const total = batchQueue.length;
+      if (total > 1) ocrBatchProgress.textContent = `שובר ${batchIndex + 1} מתוך ${total}`;
 
-      // Update title/progress
-      if (total > 1) {
-        ocrBatchProgress.textContent = `שובר ${batchIndex + 1} מתוך ${total}`;
-      }
-
-      // Reset modal state
       ocrResult.style.display = 'none';
       ocrSave.disabled = true;
       const url = URL.createObjectURL(file);
@@ -1057,11 +1079,7 @@
         const { data } = await ocrWorker.recognize(file);
         const text = data.text || '';
         const parsed = parseVoucherText(text);
-
-        ocrStatus.textContent = parsed.code
-          ? '✓ זוהה בהצלחה. ניתן לערוך לפני שמירה.'
-          : 'לא הצלחתי לזהות אוטומטית. אנא הקלד ידנית.';
-
+        ocrStatus.textContent = parsed.code ? '✓ זוהה בהצלחה. ניתן לערוך לפני שמירה.' : 'לא הצלחתי לזהות אוטומטית. אנא הקלד ידנית.';
         ocrCode.value = parsed.code || '';
         ocrValue.value = String(parsed.value || 50);
         ocrResult.style.display = 'block';
@@ -1069,8 +1087,7 @@
       } catch (err) {
         console.error(err);
         ocrStatus.textContent = 'שגיאה בזיהוי. אנא הקלד ידנית.';
-        ocrCode.value = '';
-        ocrValue.value = '50';
+        ocrCode.value = ''; ocrValue.value = '50';
         ocrResult.style.display = 'block';
         ocrSave.disabled = false;
       }
@@ -1097,26 +1114,44 @@
       return { code, value };
     }
 
-    ocrSave.addEventListener('click', () => {
+    async function addVoucher(code, value) {
+      const newV = {
+        id: 'v-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+        code: code, value: value, addedAt: Date.now() + batchIndex
+      };
+      try {
+        await pushVoucher(newV);
+        vouchers.push(newV);
+        saveCache(vouchers);
+        renderInventory();
+        renderCalculator();
+        return true;
+      } catch (err) {
+        console.error(err);
+        showSync('שגיאה בשמירה', true);
+        return false;
+      }
+    }
+
+    ocrSave.addEventListener('click', async () => {
       const code = ocrCode.value.trim();
       const value = parseInt(ocrValue.value, 10);
       if (![20, 30, 40, 50].includes(value)) { alert('ערך חייב להיות 20, 30, 40 או 50'); return; }
       if (code && vouchers.some(v => v.code === code)) {
         if (!confirm('שובר עם קוד זה כבר קיים. להוסיף בכל זאת?')) return;
       }
-      vouchers.push({
-        id: 'v-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
-        code: code, value: value, addedAt: Date.now() + batchIndex // preserve order in batch
-      });
-      saveVouchers(vouchers);
-      renderInventory();
-      renderCalculator();
-      batchAdded++;
-      batchIndex++;
-      processNextInBatch();
+      ocrSave.disabled = true;
+      const success = await addVoucher(code, value);
+      if (success) {
+        batchAdded++;
+        batchIndex++;
+        processNextInBatch();
+      } else {
+        ocrSave.disabled = false;
+      }
     });
 
-    // ==== Manual add ====
+    // ===== Manual add =====
     const manualModal = document.getElementById('manual-modal');
     document.getElementById('btn-manual').addEventListener('click', () => {
       document.getElementById('manual-code').value = '';
@@ -1124,28 +1159,27 @@
       manualModal.classList.add('show');
     });
     document.getElementById('manual-cancel').addEventListener('click', () => manualModal.classList.remove('show'));
-    document.getElementById('manual-save').addEventListener('click', () => {
+    document.getElementById('manual-save').addEventListener('click', async () => {
       const code = document.getElementById('manual-code').value.trim();
       const value = parseInt(document.getElementById('manual-value').value, 10);
       if (![20, 30, 40, 50].includes(value)) { alert('ערך חייב להיות 20, 30, 40 או 50'); return; }
       if (code && vouchers.some(v => v.code === code)) {
         if (!confirm('שובר עם קוד זה כבר קיים. להוסיף בכל זאת?')) return;
       }
-      vouchers.push({
-        id: 'v-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
-        code: code, value: value, addedAt: Date.now()
-      });
-      saveVouchers(vouchers);
-      renderInventory();
-      renderCalculator();
-      manualModal.classList.remove('show');
-      toast('שובר נוסף');
+      const btn = document.getElementById('manual-save');
+      btn.disabled = true;
+      const success = await addVoucher(code, value);
+      btn.disabled = false;
+      if (success) {
+        manualModal.classList.remove('show');
+        toast('שובר נוסף');
+      }
     });
 
     amountInput.addEventListener('input', renderCalculator);
 
-    renderInventory();
-    renderCalculator();
+    // ===== Initial state =====
+    showLogin();
   </script>
 </body>
 </html>
