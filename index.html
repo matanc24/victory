@@ -485,7 +485,7 @@
         </div>
         <button class="btn btn-secondary" id="btn-manual">+ הוספה ידנית</button>
         <input type="file" id="file-camera" accept="image/*" capture="environment" style="display: none;">
-        <input type="file" id="file-gallery" accept="image/*" style="display: none;">
+        <input type="file" id="file-gallery" accept="image/*" multiple style="display: none;">
       </div>
 
       <div class="card">
@@ -504,7 +504,8 @@
 
   <div class="modal-backdrop" id="ocr-modal">
     <div class="modal">
-      <div class="modal-title">סריקת שובר</div>
+      <div class="modal-title" id="ocr-title">סריקת שובר</div>
+      <div id="ocr-batch-progress" style="display: none; text-align: center; font-size: 13px; color: #6e6e73; margin-bottom: 0.5rem;"></div>
       <img id="ocr-preview" class="preview-image" style="display: none;">
       <div id="ocr-status" class="ocr-status"></div>
       <div id="ocr-result" style="display: none;">
@@ -522,6 +523,7 @@
       </div>
       <div class="btn-row" style="margin-top:1rem;">
         <button class="btn btn-secondary" id="ocr-cancel">ביטול</button>
+        <button class="btn btn-secondary" id="ocr-skip" style="display: none;">דלג</button>
         <button class="btn" id="ocr-save" disabled>שמור</button>
       </div>
     </div>
@@ -877,8 +879,8 @@
     // ==== File inputs ====
     document.getElementById('btn-camera').addEventListener('click', () => document.getElementById('file-camera').click());
     document.getElementById('btn-gallery').addEventListener('click', () => document.getElementById('file-gallery').click());
-    document.getElementById('file-camera').addEventListener('change', e => handleFile(e.target.files[0]));
-    document.getElementById('file-gallery').addEventListener('change', e => handleFile(e.target.files[0]));
+    document.getElementById('file-camera').addEventListener('change', e => handleFiles(Array.from(e.target.files)));
+    document.getElementById('file-gallery').addEventListener('change', e => handleFiles(Array.from(e.target.files)));
 
     // ==== OCR ====
     const ocrModal = document.getElementById('ocr-modal');
@@ -889,6 +891,15 @@
     const ocrValue = document.getElementById('ocr-value');
     const ocrSave = document.getElementById('ocr-save');
     const ocrCancel = document.getElementById('ocr-cancel');
+    const ocrSkip = document.getElementById('ocr-skip');
+    const ocrTitle = document.getElementById('ocr-title');
+    const ocrBatchProgress = document.getElementById('ocr-batch-progress');
+
+    // Batch state
+    let batchQueue = [];
+    let batchIndex = 0;
+    let batchAdded = 0;
+    let ocrWorker = null; // Reused across batch
 
     function showOcrModal() {
       ocrModal.classList.add('show');
@@ -901,29 +912,107 @@
       document.getElementById('file-camera').value = '';
       document.getElementById('file-gallery').value = '';
     }
-    ocrCancel.addEventListener('click', hideOcrModal);
 
-    async function handleFile(file) {
-      if (!file) return;
+    async function cleanupBatch() {
+      if (ocrWorker) {
+        try { await ocrWorker.terminate(); } catch (e) {}
+        ocrWorker = null;
+      }
+      batchQueue = [];
+      batchIndex = 0;
+      batchAdded = 0;
+      ocrSkip.style.display = 'none';
+      ocrTitle.textContent = 'סריקת שובר';
+      ocrBatchProgress.style.display = 'none';
+    }
+
+    ocrCancel.addEventListener('click', async () => {
+      hideOcrModal();
+      const wasBatch = batchQueue.length > 1;
+      const added = batchAdded;
+      await cleanupBatch();
+      if (wasBatch && added > 0) toast(`נוספו ${added} שוברים`);
+    });
+
+    ocrSkip.addEventListener('click', () => {
+      processNextInBatch();
+    });
+
+    async function handleFiles(files) {
+      if (!files || files.length === 0) return;
+      batchQueue = files;
+      batchIndex = 0;
+      batchAdded = 0;
       showOcrModal();
-      const url = URL.createObjectURL(file);
-      ocrPreview.src = url;
-      ocrPreview.style.display = 'block';
 
-      ocrStatus.innerHTML = '<span class="spinner"></span> טוען מנוע זיהוי טקסט (פעם אחת בלבד)...';
+      if (files.length > 1) {
+        ocrSkip.style.display = 'block';
+        ocrBatchProgress.style.display = 'block';
+      } else {
+        ocrSkip.style.display = 'none';
+        ocrBatchProgress.style.display = 'none';
+      }
 
+      // Initialize worker once for the whole batch
+      ocrStatus.innerHTML = '<span class="spinner"></span> טוען מנוע זיהוי טקסט...';
       try {
-        const worker = await Tesseract.createWorker(['heb', 'eng'], 1, {
+        ocrWorker = await Tesseract.createWorker(['heb', 'eng'], 1, {
           logger: m => {
             if (m.status === 'recognizing text') {
               const pct = Math.round(m.progress * 100);
-              ocrStatus.innerHTML = `<span class="spinner"></span> מזהה טקסט... ${pct}%`;
+              const prefix = batchQueue.length > 1
+                ? `שובר ${batchIndex + 1}/${batchQueue.length} - `
+                : '';
+              ocrStatus.innerHTML = `<span class="spinner"></span> ${prefix}מזהה טקסט... ${pct}%`;
             }
           }
         });
-        const { data } = await worker.recognize(file);
-        await worker.terminate();
+      } catch (err) {
+        console.error(err);
+        ocrStatus.textContent = 'שגיאה בטעינת מנוע הזיהוי. אנא הקלד ידנית.';
+        ocrCode.value = '';
+        ocrValue.value = '50';
+        ocrResult.style.display = 'block';
+        ocrSave.disabled = false;
+        return;
+      }
 
+      processNextInBatch();
+    }
+
+    async function processNextInBatch() {
+      if (batchIndex >= batchQueue.length) {
+        // Batch done
+        const added = batchAdded;
+        const total = batchQueue.length;
+        await cleanupBatch();
+        hideOcrModal();
+        if (total > 1) {
+          toast(`נוספו ${added} שוברים מתוך ${total}`);
+        } else if (added > 0) {
+          toast('שובר נוסף');
+        }
+        return;
+      }
+
+      const file = batchQueue[batchIndex];
+      const total = batchQueue.length;
+
+      // Update title/progress
+      if (total > 1) {
+        ocrBatchProgress.textContent = `שובר ${batchIndex + 1} מתוך ${total}`;
+      }
+
+      // Reset modal state
+      ocrResult.style.display = 'none';
+      ocrSave.disabled = true;
+      const url = URL.createObjectURL(file);
+      ocrPreview.src = url;
+      ocrPreview.style.display = 'block';
+      ocrStatus.innerHTML = '<span class="spinner"></span> מעבד את התמונה...';
+
+      try {
+        const { data } = await ocrWorker.recognize(file);
         const text = data.text || '';
         const parsed = parseVoucherText(text);
 
@@ -975,13 +1064,14 @@
       }
       vouchers.push({
         id: 'v-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
-        code: code, value: value, addedAt: Date.now()
+        code: code, value: value, addedAt: Date.now() + batchIndex // preserve order in batch
       });
       saveVouchers(vouchers);
       renderInventory();
       renderCalculator();
-      hideOcrModal();
-      toast('שובר נוסף');
+      batchAdded++;
+      batchIndex++;
+      processNextInBatch();
     });
 
     // ==== Manual add ====
