@@ -77,16 +77,14 @@
       color: #1d1d1f;
       box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     }
-    .input-row {
-      margin-bottom: 1rem;
-    }
+    .input-row { margin-bottom: 1rem; }
     .input-row label {
       display: block;
       font-size: 13px;
       color: #6e6e73;
       margin-bottom: 6px;
     }
-    input[type="number"] {
+    input[type="number"], input[type="text"] {
       width: 100%;
       font-size: 20px;
       padding: 12px 14px;
@@ -99,7 +97,7 @@
       outline: none;
       transition: border-color 0.15s;
     }
-    input[type="number"]:focus {
+    input:focus {
       border-color: #007aff;
       box-shadow: 0 0 0 3px rgba(0,122,255,0.15);
     }
@@ -149,18 +147,13 @@
       align-items: center;
       margin-bottom: 6px;
     }
-    .alt-meta {
-      color: #6e6e73;
-      font-size: 13px;
-    }
-
+    .alt-meta { color: #6e6e73; font-size: 13px; }
     .hint {
       font-size: 13px;
       color: #6e6e73;
       text-align: center;
       margin-top: 0.75rem;
     }
-
     .empty {
       text-align: center;
       color: #86868b;
@@ -192,49 +185,8 @@
       background: #f5f5f7;
       color: #007aff;
     }
-
-    .inventory-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 14px 0;
-      border-bottom: 1px solid #f0f0f2;
-    }
-    .inventory-row:last-child { border-bottom: none; }
-    .inventory-label {
-      font-size: 16px;
-      font-weight: 500;
-    }
-    .inventory-controls {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .qty-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      border: 1px solid #d2d2d7;
-      background: #ffffff;
-      font-size: 20px;
-      font-weight: 500;
-      color: #1d1d1f;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: inherit;
-      padding: 0;
-    }
-    .qty-btn:active { background: #f5f5f7; }
-    .qty-btn:disabled { opacity: 0.4; }
-    .qty-display {
-      min-width: 40px;
-      text-align: center;
-      font-size: 18px;
-      font-weight: 600;
-    }
+    .btn-row { display: flex; gap: 8px; }
+    .btn-row .btn { flex: 1; }
 
     .total-bar {
       background: #007aff;
@@ -247,10 +199,7 @@
       margin-top: 1rem;
       font-size: 15px;
     }
-    .total-bar-value {
-      font-size: 20px;
-      font-weight: 600;
-    }
+    .total-bar-value { font-size: 20px; font-weight: 600; }
 
     .insufficient {
       background: #fff4e5;
@@ -262,6 +211,180 @@
       text-align: center;
     }
 
+    .voucher-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: #f5f5f7;
+      border-radius: 12px;
+      margin-bottom: 8px;
+    }
+    .voucher-badge {
+      flex-shrink: 0;
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      background: #ff8a00;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+    }
+    .voucher-badge.v20 { background: #4a90e2; }
+    .voucher-info { flex: 1; min-width: 0; }
+    .voucher-code {
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      direction: ltr;
+      text-align: left;
+      color: #1d1d1f;
+      cursor: pointer;
+      user-select: all;
+      -webkit-user-select: all;
+    }
+    .voucher-meta {
+      font-size: 12px;
+      color: #6e6e73;
+      margin-top: 2px;
+    }
+    .voucher-actions { display: flex; gap: 4px; }
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: #ffffff;
+      color: #6e6e73;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: inherit;
+      padding: 0;
+      font-size: 16px;
+    }
+    .icon-btn:active { background: #e8e8ed; }
+    .icon-btn.danger { color: #c62828; }
+
+    .add-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 0.5rem;
+    }
+    .add-btn {
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px dashed #d2d2d7;
+      background: transparent;
+      color: #007aff;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .add-btn:active { background: #f5f5f7; }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 100;
+      padding: 1rem;
+    }
+    .modal-backdrop.show { display: flex; }
+    .modal {
+      background: #ffffff;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 480px;
+      padding: 1.25rem;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-title {
+      font-size: 17px;
+      font-weight: 600;
+      margin: 0 0 1rem;
+      text-align: center;
+    }
+
+    .ocr-status {
+      text-align: center;
+      padding: 1rem;
+      font-size: 14px;
+      color: #6e6e73;
+    }
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid #d2d2d7;
+      border-top-color: #007aff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      vertical-align: middle;
+      margin-left: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .preview-image {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: 8px;
+      margin: 0.5rem auto;
+      display: block;
+    }
+
+    select.value-select {
+      width: 100%;
+      font-size: 18px;
+      padding: 12px;
+      border: 1px solid #d2d2d7;
+      border-radius: 10px;
+      font-family: inherit;
+      background: #fff;
+      color: #1d1d1f;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1d1d1f;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 22px;
+      font-size: 14px;
+      z-index: 200;
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+
+    .group-header {
+      font-size: 14px;
+      font-weight: 600;
+      color: #6e6e73;
+      margin: 1rem 0 0.5rem;
+      padding: 0 4px;
+    }
+    .group-header:first-child { margin-top: 0; }
+
     @media (prefers-color-scheme: dark) {
       html, body { background: #000000; color: #f5f5f7; }
       .card { background: #1c1c1e; box-shadow: none; }
@@ -269,8 +392,8 @@
       .tabs { background: #2c2c2e; }
       .tab { color: #98989d; }
       .tab.active { background: #48484a; color: #ffffff; }
-      input[type="number"] { background: #2c2c2e; border-color: #38383a; color: #ffffff; }
-      input[type="number"]:focus { border-color: #0a84ff; }
+      input[type="number"], input[type="text"], select.value-select { background: #2c2c2e; border-color: #38383a; color: #ffffff; }
+      input:focus { border-color: #0a84ff; }
       .stat { background: #2c2c2e; }
       .stat-label { color: #98989d; }
       .stat-value { color: #ffffff; }
@@ -280,14 +403,18 @@
       .stat.warning .stat-value { color: #fbbf24; }
       .stat.danger { background: #3d0e0e; }
       .stat.danger .stat-value { color: #f87171; }
-      .alt { background: #2c2c2e; }
-      .alt-meta { color: #98989d; }
-      .hint, .empty { color: #98989d; }
-      .qty-btn { background: #2c2c2e; border-color: #38383a; color: #ffffff; }
-      .qty-btn:active { background: #38383a; }
-      .inventory-row { border-bottom-color: #2c2c2e; }
+      .alt, .voucher-item { background: #2c2c2e; }
+      .alt-meta, .voucher-meta { color: #98989d; }
+      .hint, .empty, .ocr-status { color: #98989d; }
+      .voucher-code { color: #ffffff; }
+      .icon-btn { background: #1c1c1e; color: #98989d; }
+      .icon-btn:active { background: #38383a; }
       .btn-secondary { background: #2c2c2e; color: #0a84ff; }
       .insufficient { background: #3d2a05; color: #fbbf24; }
+      .add-btn { border-color: #38383a; color: #0a84ff; }
+      .add-btn:active { background: #2c2c2e; }
+      .modal { background: #1c1c1e; }
+      .group-header { color: #98989d; }
     }
   </style>
 </head>
@@ -300,7 +427,6 @@
       <button class="tab" data-tab="inventory">המלאי שלי</button>
     </div>
 
-    <!-- Calculator Tab -->
     <div id="tab-calc">
       <div class="card">
         <div class="input-row">
@@ -332,7 +458,9 @@
 
           <div id="insufficient-warning" style="display: none;" class="insufficient"></div>
 
-          <button class="btn" id="use-vouchers" style="display: none;">השתמשתי - הפחת מהמלאי</button>
+          <div id="vouchers-to-use" style="margin-top: 1rem;"></div>
+
+          <button class="btn" id="use-vouchers" style="display: none; margin-top: 0.75rem;">השתמשתי - הסר מהמלאי</button>
 
           <div id="alternatives" style="margin-top: 1rem;"></div>
 
@@ -342,34 +470,27 @@
         <div id="empty" class="empty">הכנס סכום כדי לראות את הצירוף הטוב ביותר</div>
       </div>
 
-      <div class="card" id="inventory-summary">
+      <div class="card">
         <div class="card-title">המלאי שלי כעת</div>
         <div id="summary-content"></div>
       </div>
     </div>
 
-    <!-- Inventory Tab -->
     <div id="tab-inventory" style="display: none;">
       <div class="card">
-        <div class="card-title">ניהול מלאי שוברים</div>
-
-        <div class="inventory-row">
-          <div class="inventory-label">שוברי 50 ₪</div>
-          <div class="inventory-controls">
-            <button class="qty-btn" data-action="dec" data-type="50">−</button>
-            <div class="qty-display" id="inv-50">0</div>
-            <button class="qty-btn" data-action="inc" data-type="50">+</button>
-          </div>
+        <div class="card-title">הוספת שובר חדש</div>
+        <div class="add-options">
+          <button class="add-btn" id="btn-camera">📷 מצלמה</button>
+          <button class="add-btn" id="btn-gallery">🖼️ גלריה</button>
         </div>
+        <button class="btn btn-secondary" id="btn-manual">+ הוספה ידנית</button>
+        <input type="file" id="file-camera" accept="image/*" capture="environment" style="display: none;">
+        <input type="file" id="file-gallery" accept="image/*" style="display: none;">
+      </div>
 
-        <div class="inventory-row">
-          <div class="inventory-label">שוברי 20 ₪</div>
-          <div class="inventory-controls">
-            <button class="qty-btn" data-action="dec" data-type="20">−</button>
-            <div class="qty-display" id="inv-20">0</div>
-            <button class="qty-btn" data-action="inc" data-type="20">+</button>
-          </div>
-        </div>
+      <div class="card">
+        <div class="card-title">השוברים שלי</div>
+        <div id="vouchers-list"></div>
 
         <div class="total-bar">
           <span>סה"כ במלאי</span>
@@ -378,40 +499,91 @@
 
         <button class="btn btn-secondary" id="reset-inv" style="margin-top: 1rem;">איפוס מלאי</button>
       </div>
+    </div>
+  </div>
 
-      <div class="card">
-        <div class="card-title">טיפ</div>
-        <p style="margin: 0; font-size: 14px; color: #6e6e73; line-height: 1.5;">
-          כל פעם שאתה קונה שוברים בתן ביס, הוסף אותם כאן. כשתשתמש בצירוף במחשבון, האפליקציה תוריד אוטומטית מהמלאי.
-        </p>
+  <div class="modal-backdrop" id="ocr-modal">
+    <div class="modal">
+      <div class="modal-title">סריקת שובר</div>
+      <img id="ocr-preview" class="preview-image" style="display: none;">
+      <div id="ocr-status" class="ocr-status"></div>
+      <div id="ocr-result" style="display: none;">
+        <div class="input-row">
+          <label>קוד השובר</label>
+          <input id="ocr-code" type="text" inputmode="numeric">
+        </div>
+        <div class="input-row">
+          <label>ערך</label>
+          <select id="ocr-value" class="value-select">
+            <option value="50">50 ₪</option>
+            <option value="20">20 ₪</option>
+          </select>
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top:1rem;">
+        <button class="btn btn-secondary" id="ocr-cancel">ביטול</button>
+        <button class="btn" id="ocr-save" disabled>שמור</button>
       </div>
     </div>
   </div>
 
-  <script>
-    const STORAGE_KEY = 'voucher_inventory_v1';
+  <div class="modal-backdrop" id="manual-modal">
+    <div class="modal">
+      <div class="modal-title">הוספת שובר ידנית</div>
+      <div class="input-row">
+        <label>קוד השובר</label>
+        <input id="manual-code" type="text" inputmode="numeric" placeholder="148241681-1070">
+      </div>
+      <div class="input-row">
+        <label>ערך</label>
+        <select id="manual-value" class="value-select">
+          <option value="50">50 ₪</option>
+          <option value="20">20 ₪</option>
+        </select>
+      </div>
+      <div class="btn-row" style="margin-top:1rem;">
+        <button class="btn btn-secondary" id="manual-cancel">ביטול</button>
+        <button class="btn" id="manual-save">שמור</button>
+      </div>
+    </div>
+  </div>
 
-    function loadInventory() {
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js"></script>
+  <script>
+    const STORAGE_KEY = 'voucher_inventory_v2';
+
+    function loadVouchers() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return { '50': 0, '20': 0 };
+        if (!raw) return [];
         const parsed = JSON.parse(raw);
-        return { '50': Number(parsed['50']) || 0, '20': Number(parsed['20']) || 0 };
-      } catch (e) {
-        return { '50': 0, '20': 0 };
-      }
+        if (!Array.isArray(parsed)) return [];
+        return parsed.filter(v => v && (v.value === 50 || v.value === 20));
+      } catch (e) { return []; }
+    }
+    function saveVouchers(vs) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(vs)); } catch (e) {}
     }
 
-    function saveInventory(inv) {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(inv));
-      } catch (e) {}
-    }
-
-    let inventory = loadInventory();
+    let vouchers = loadVouchers();
     let currentBest = null;
 
-    // Tab switching
+    // Migration v1 -> v2
+    (function migrate() {
+      const oldRaw = localStorage.getItem('voucher_inventory_v1');
+      if (oldRaw && vouchers.length === 0) {
+        try {
+          const old = JSON.parse(oldRaw);
+          const now = Date.now();
+          for (let i = 0; i < (old['50'] || 0); i++) vouchers.push({ id: 'mig-50-'+now+'-'+i, code: '', value: 50, addedAt: now });
+          for (let i = 0; i < (old['20'] || 0); i++) vouchers.push({ id: 'mig-20-'+now+'-'+i, code: '', value: 20, addedAt: now });
+          if (vouchers.length > 0) { saveVouchers(vouchers); localStorage.removeItem('voucher_inventory_v1'); }
+        } catch (e) {}
+      }
+    })();
+
     document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -422,84 +594,48 @@
       });
     });
 
-    // Inventory controls
-    document.querySelectorAll('.qty-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const type = btn.dataset.type;
-        const action = btn.dataset.action;
-        if (action === 'inc') {
-          inventory[type]++;
-        } else if (action === 'dec' && inventory[type] > 0) {
-          inventory[type]--;
-        }
-        saveInventory(inventory);
-        renderInventory();
-        renderCalculator();
-      });
-    });
-
-    document.getElementById('reset-inv').addEventListener('click', () => {
-      if (confirm('לאפס את כל המלאי?')) {
-        inventory = { '50': 0, '20': 0 };
-        saveInventory(inventory);
-        renderInventory();
-        renderCalculator();
-      }
-    });
-
-    function renderInventory() {
-      document.getElementById('inv-50').textContent = inventory['50'];
-      document.getElementById('inv-20').textContent = inventory['20'];
-      const total = inventory['50'] * 50 + inventory['20'] * 20;
-      document.getElementById('inv-total').textContent = total.toLocaleString('he-IL') + ' ₪';
-
-      // Summary on calc tab
-      const summary = document.getElementById('summary-content');
-      summary.innerHTML = `
-        <div class="stats-grid">
-          <div class="stat">
-            <div class="stat-label">שוברי 50</div>
-            <div class="stat-value">${inventory['50']}</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">שוברי 20</div>
-            <div class="stat-value">${inventory['20']}</div>
-          </div>
-        </div>
-        <div class="hint" style="margin-top: 8px;">סה"כ ${total.toLocaleString('he-IL')} ₪ במלאי</div>
-      `;
+    let toastTimer = null;
+    function toast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove('show'), 2000);
     }
 
-    // Calculator logic — find combinations bounded by inventory
-    function findCombinations(amount, inv) {
-      if (!Number.isFinite(amount) || amount < 0) return [];
+    function getCounts() {
+      let c50 = 0, c20 = 0;
+      for (const v of vouchers) { if (v.value === 50) c50++; else if (v.value === 20) c20++; }
+      return { '50': c50, '20': c20 };
+    }
+    function getSortedByAge() {
+      return [...vouchers].sort((a, b) => (a.addedAt || 0) - (b.addedAt || 0));
+    }
 
+    function findCombinations(amount, counts) {
+      if (!Number.isFinite(amount) || amount < 0) return [];
       let bestCovered = -1;
       const all = [];
-
-      const maxF = Math.min(inv['50'], Math.floor(amount / 50) + 1);
+      const maxF = Math.min(counts['50'], Math.floor(amount / 50) + 1);
       for (let f = 0; f <= maxF; f++) {
         const remaining = amount - f * 50;
         if (remaining < 0) break;
         const tIdeal = Math.floor(remaining / 20);
-        const t = Math.min(inv['20'], tIdeal);
+        const t = Math.min(counts['20'], tIdeal);
         const covered = f * 50 + t * 20;
         if (covered > amount) continue;
         if (covered > bestCovered) bestCovered = covered;
         all.push({ fifties: f, twenties: t, covered, pocket: amount - covered });
       }
-
       const optimal = all.filter(c => c.covered === bestCovered);
       optimal.sort((a, b) => {
-        const totalA = a.fifties + a.twenties;
-        const totalB = b.fifties + b.twenties;
-        if (totalA !== totalB) return totalA - totalB;
+        const tA = a.fifties + a.twenties, tB = b.fifties + b.twenties;
+        if (tA !== tB) return tA - tB;
         return b.fifties - a.fifties;
       });
       return optimal;
     }
 
-    // Also compute the unconstrained optimal (ignoring inventory) to detect when inventory is the limiter
     function findUnconstrainedOptimal(amount) {
       if (!Number.isFinite(amount) || amount < 0) return null;
       let best = { fifties: 0, twenties: 0, covered: -1, pocket: amount };
@@ -509,23 +645,51 @@
         if (remaining < 0) break;
         const t = Math.floor(remaining / 20);
         const covered = f * 50 + t * 20;
-        if (covered <= amount && covered > best.covered) {
-          best = { fifties: f, twenties: t, covered, pocket: amount - covered };
-        }
+        if (covered <= amount && covered > best.covered) best = { fifties: f, twenties: t, covered, pocket: amount - covered };
       }
       return best;
     }
 
-    function fmt(n) {
-      return Math.round(n).toLocaleString('he-IL') + ' ₪';
-    }
-
+    function fmt(n) { return Math.round(n).toLocaleString('he-IL') + ' ₪'; }
     function describe(c) {
       const parts = [];
       if (c.fifties > 0) parts.push(c.fifties + ' × 50');
       if (c.twenties > 0) parts.push(c.twenties + ' × 20');
-      if (parts.length === 0) return 'ללא שוברים';
-      return parts.join(' + ');
+      return parts.length ? parts.join(' + ') : 'ללא שוברים';
+    }
+
+    function pickVouchersForCombo(combo) {
+      const sorted = getSortedByAge();
+      const picked = [];
+      let n50 = combo.fifties, n20 = combo.twenties;
+      for (const v of sorted) {
+        if (n50 > 0 && v.value === 50) { picked.push(v); n50--; }
+        else if (n20 > 0 && v.value === 20) { picked.push(v); n20--; }
+        if (n50 === 0 && n20 === 0) break;
+      }
+      return picked;
+    }
+
+    function renderVoucherItem(v, withActions) {
+      const cls = v.value === 20 ? 'v20' : '';
+      const codeDisplay = v.code || '<span style="color:#86868b">ללא קוד</span>';
+      const date = v.addedAt ? new Date(v.addedAt).toLocaleDateString('he-IL') : '';
+      const actionsHtml = withActions ? `
+        <div class="voucher-actions">
+          ${v.code ? `<button class="icon-btn" data-copy="${v.code}" title="העתק">⎘</button>` : ''}
+          <button class="icon-btn danger" data-delete="${v.id}" title="מחק">×</button>
+        </div>
+      ` : '';
+      return `
+        <div class="voucher-item">
+          <div class="voucher-badge ${cls}">${v.value}₪</div>
+          <div class="voucher-info">
+            <div class="voucher-code">${codeDisplay}</div>
+            <div class="voucher-meta">${date}</div>
+          </div>
+          ${actionsHtml}
+        </div>
+      `;
     }
 
     const amountInput = document.getElementById('amount');
@@ -540,6 +704,7 @@
         results.style.display = 'none';
         empty.style.display = 'block';
         empty.textContent = 'הכנס סכום כדי לראות את הצירוף הטוב ביותר';
+        empty.style.color = '';
         currentBest = null;
         return;
       }
@@ -555,9 +720,9 @@
       empty.style.display = 'none';
       results.style.display = 'block';
 
-      const combos = findCombinations(amount, inventory);
+      const counts = getCounts();
+      const combos = findCombinations(amount, counts);
       const unconstrained = findUnconstrainedOptimal(amount);
-
       const best = combos[0] || { fifties: 0, twenties: 0, covered: 0, pocket: amount };
       currentBest = best;
 
@@ -568,71 +733,131 @@
 
       const pocketCard = document.getElementById('pocket-card');
       pocketCard.classList.remove('success', 'warning', 'danger');
-      if (best.pocket === 0) {
-        pocketCard.classList.add('success');
-      } else if (unconstrained && best.pocket > unconstrained.pocket) {
-        pocketCard.classList.add('danger');
-      } else {
-        pocketCard.classList.add('warning');
-      }
+      if (best.pocket === 0) pocketCard.classList.add('success');
+      else if (unconstrained && best.pocket > unconstrained.pocket) pocketCard.classList.add('danger');
+      else pocketCard.classList.add('warning');
 
-      // Insufficient inventory warning
       if (unconstrained && best.pocket > unconstrained.pocket) {
-        const extraOutOfPocket = best.pocket - unconstrained.pocket;
+        const extra = best.pocket - unconstrained.pocket;
         insufficientWarning.style.display = 'block';
-        insufficientWarning.textContent = `המלאי לא מספיק לצירוף האופטימלי. אם היה לך מספיק שוברים, היית משלם רק ${fmt(unconstrained.pocket)} מהכיס (חסר ${fmt(extraOutOfPocket)}).`;
+        insufficientWarning.textContent = `המלאי לא מספיק לצירוף האופטימלי. אם היה לך מספיק שוברים, היית משלם רק ${fmt(unconstrained.pocket)} מהכיס (חסר ${fmt(extra)}).`;
       } else {
         insufficientWarning.style.display = 'none';
       }
 
-      // Use button
+      const vouchersToUseEl = document.getElementById('vouchers-to-use');
       if (best.fifties > 0 || best.twenties > 0) {
+        const picked = pickVouchersForCombo(best);
+        if (picked.length > 0 && picked.some(v => v.code)) {
+          let html = '<div style="font-size: 13px; color: #6e6e73; margin-bottom: 8px;">השוברים הספציפיים להשתמש (FIFO - הישנים קודם):</div>';
+          for (const v of picked) html += renderVoucherItem(v, false);
+          vouchersToUseEl.innerHTML = html;
+          // Wire copy buttons in calc area too
+          vouchersToUseEl.querySelectorAll('[data-copy]').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              try { await navigator.clipboard.writeText(btn.dataset.copy); toast('הקוד הועתק'); } catch (e) { toast('לא הצלחתי להעתיק'); }
+            });
+          });
+        } else {
+          vouchersToUseEl.innerHTML = '';
+        }
         useBtn.style.display = 'block';
         useBtn.disabled = false;
-        useBtn.textContent = `השתמשתי - הפחת ${describe(best)} מהמלאי`;
+        useBtn.textContent = `השתמשתי - הסר ${describe(best)} מהמלאי`;
       } else {
+        vouchersToUseEl.innerHTML = '';
         useBtn.style.display = 'none';
       }
 
-      // Hint
       const hint = document.getElementById('hint');
-      if (best.pocket === 0) {
-        hint.textContent = 'מצוין — תשלום מלא בשוברים, בלי לבזבז.';
-      } else if (unconstrained && best.pocket === unconstrained.pocket) {
-        hint.textContent = 'זה המינימום שאי אפשר לכסות בשוברים בלי לבזבז.';
-      } else {
-        hint.textContent = '';
-      }
+      if (best.pocket === 0) hint.textContent = 'מצוין — תשלום מלא בשוברים, בלי לבזבז.';
+      else if (unconstrained && best.pocket === unconstrained.pocket) hint.textContent = 'זה המינימום שאי אפשר לכסות בשוברים בלי לבזבז.';
+      else hint.textContent = '';
 
-      // Alternatives
       const altsEl = document.getElementById('alternatives');
       const others = combos.slice(1);
       if (others.length > 0) {
         let html = '<div style="font-size: 13px; color: #6e6e73; margin-bottom: 8px;">צירופים חלופיים (אותה תוצאה):</div>';
-        for (const c of others) {
-          html += `<div class="alt"><span>${describe(c)}</span><span class="alt-meta">${c.fifties + c.twenties} שוברים</span></div>`;
-        }
+        for (const c of others) html += `<div class="alt"><span>${describe(c)}</span><span class="alt-meta">${c.fifties + c.twenties} שוברים</span></div>`;
         altsEl.innerHTML = html;
       } else {
         altsEl.innerHTML = '';
       }
     }
 
+    function renderInventory() {
+      const counts = getCounts();
+      const total = counts['50'] * 50 + counts['20'] * 20;
+      document.getElementById('inv-total').textContent = total.toLocaleString('he-IL') + ' ₪';
+
+      document.getElementById('summary-content').innerHTML = `
+        <div class="stats-grid">
+          <div class="stat">
+            <div class="stat-label">שוברי 50</div>
+            <div class="stat-value">${counts['50']}</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">שוברי 20</div>
+            <div class="stat-value">${counts['20']}</div>
+          </div>
+        </div>
+        <div class="hint" style="margin-top: 8px;">סה"כ ${total.toLocaleString('he-IL')} ₪ במלאי</div>
+      `;
+
+      const listEl = document.getElementById('vouchers-list');
+      if (vouchers.length === 0) {
+        listEl.innerHTML = '<div class="empty">אין שוברים במלאי. הוסף שובר חדש למעלה.</div>';
+        return;
+      }
+      const sorted = getSortedByAge();
+      const v50list = sorted.filter(v => v.value === 50);
+      const v20list = sorted.filter(v => v.value === 20);
+
+      let html = '';
+      if (v50list.length > 0) {
+        html += `<div class="group-header">שוברי 50 ₪ (${v50list.length})</div>`;
+        for (const v of v50list) html += renderVoucherItem(v, true);
+      }
+      if (v20list.length > 0) {
+        html += `<div class="group-header">שוברי 20 ₪ (${v20list.length})</div>`;
+        for (const v of v20list) html += renderVoucherItem(v, true);
+      }
+      listEl.innerHTML = html;
+
+      listEl.querySelectorAll('[data-copy]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          try { await navigator.clipboard.writeText(btn.dataset.copy); toast('הקוד הועתק'); } catch (e) { toast('לא הצלחתי להעתיק'); }
+        });
+      });
+      listEl.querySelectorAll('[data-delete]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.delete;
+          if (confirm('להסיר את השובר?')) {
+            vouchers = vouchers.filter(v => v.id !== id);
+            saveVouchers(vouchers);
+            renderInventory();
+            renderCalculator();
+          }
+        });
+      });
+    }
+
     useBtn.addEventListener('click', () => {
       if (!currentBest) return;
-      if (currentBest.fifties > inventory['50'] || currentBest.twenties > inventory['20']) {
+      const counts = getCounts();
+      if (currentBest.fifties > counts['50'] || currentBest.twenties > counts['20']) {
         alert('אין מספיק שוברים במלאי');
         return;
       }
-      inventory['50'] -= currentBest.fifties;
-      inventory['20'] -= currentBest.twenties;
-      saveInventory(inventory);
+      const picked = pickVouchersForCombo(currentBest);
+      const ids = new Set(picked.map(v => v.id));
+      vouchers = vouchers.filter(v => !ids.has(v.id));
+      saveVouchers(vouchers);
       renderInventory();
-      // Clear amount and show confirmation
       amountInput.value = '';
       results.style.display = 'none';
       empty.style.display = 'block';
-      empty.textContent = '✓ נוכה מהמלאי. הכנס סכום חדש בפעם הבאה.';
+      empty.textContent = '✓ ' + picked.length + ' שוברים הוסרו מהמלאי';
       empty.style.color = '#0e7c3a';
       setTimeout(() => {
         empty.style.color = '';
@@ -640,9 +865,153 @@
       }, 2500);
     });
 
+    document.getElementById('reset-inv').addEventListener('click', () => {
+      if (confirm('לאפס את כל המלאי? פעולה זו תמחק את כל השוברים.')) {
+        vouchers = [];
+        saveVouchers(vouchers);
+        renderInventory();
+        renderCalculator();
+      }
+    });
+
+    // ==== File inputs ====
+    document.getElementById('btn-camera').addEventListener('click', () => document.getElementById('file-camera').click());
+    document.getElementById('btn-gallery').addEventListener('click', () => document.getElementById('file-gallery').click());
+    document.getElementById('file-camera').addEventListener('change', e => handleFile(e.target.files[0]));
+    document.getElementById('file-gallery').addEventListener('change', e => handleFile(e.target.files[0]));
+
+    // ==== OCR ====
+    const ocrModal = document.getElementById('ocr-modal');
+    const ocrPreview = document.getElementById('ocr-preview');
+    const ocrStatus = document.getElementById('ocr-status');
+    const ocrResult = document.getElementById('ocr-result');
+    const ocrCode = document.getElementById('ocr-code');
+    const ocrValue = document.getElementById('ocr-value');
+    const ocrSave = document.getElementById('ocr-save');
+    const ocrCancel = document.getElementById('ocr-cancel');
+
+    function showOcrModal() {
+      ocrModal.classList.add('show');
+      ocrResult.style.display = 'none';
+      ocrSave.disabled = true;
+      ocrPreview.style.display = 'none';
+    }
+    function hideOcrModal() {
+      ocrModal.classList.remove('show');
+      document.getElementById('file-camera').value = '';
+      document.getElementById('file-gallery').value = '';
+    }
+    ocrCancel.addEventListener('click', hideOcrModal);
+
+    async function handleFile(file) {
+      if (!file) return;
+      showOcrModal();
+      const url = URL.createObjectURL(file);
+      ocrPreview.src = url;
+      ocrPreview.style.display = 'block';
+
+      ocrStatus.innerHTML = '<span class="spinner"></span> טוען מנוע זיהוי טקסט (פעם אחת בלבד)...';
+
+      try {
+        const worker = await Tesseract.createWorker(['heb', 'eng'], 1, {
+          logger: m => {
+            if (m.status === 'recognizing text') {
+              const pct = Math.round(m.progress * 100);
+              ocrStatus.innerHTML = `<span class="spinner"></span> מזהה טקסט... ${pct}%`;
+            }
+          }
+        });
+        const { data } = await worker.recognize(file);
+        await worker.terminate();
+
+        const text = data.text || '';
+        const parsed = parseVoucherText(text);
+
+        ocrStatus.textContent = parsed.code
+          ? '✓ זוהה בהצלחה. ניתן לערוך לפני שמירה.'
+          : 'לא הצלחתי לזהות אוטומטית. אנא הקלד ידנית.';
+
+        ocrCode.value = parsed.code || '';
+        ocrValue.value = String(parsed.value || 50);
+        ocrResult.style.display = 'block';
+        ocrSave.disabled = false;
+      } catch (err) {
+        console.error(err);
+        ocrStatus.textContent = 'שגיאה בזיהוי. אנא הקלד ידנית.';
+        ocrCode.value = '';
+        ocrValue.value = '50';
+        ocrResult.style.display = 'block';
+        ocrSave.disabled = false;
+      }
+    }
+
+    function parseVoucherText(text) {
+      const cleaned = text.replace(/[\u200E\u200F]/g, '');
+      const codeMatch = cleaned.match(/(\d{9})\s*[-–—]\s*(\d{4})/);
+      let code = null;
+      if (codeMatch) code = codeMatch[1] + '-' + codeMatch[2];
+
+      let value = null;
+      const valuePatterns = [
+        /(?:₪|ש["׳]ח|ש"ח|שח)\s*([25]0)\b/,
+        /\b([25]0)\s*(?:₪|ש["׳]ח|ש"ח|שח)/,
+        /יתרה[^\d]{0,30}([25]0)\b/,
+        /\b([25]0)\b/
+      ];
+      for (const re of valuePatterns) {
+        const m = cleaned.match(re);
+        if (m) { value = parseInt(m[1], 10); break; }
+      }
+      if (value !== 20 && value !== 50) value = 50;
+      return { code, value };
+    }
+
+    ocrSave.addEventListener('click', () => {
+      const code = ocrCode.value.trim();
+      const value = parseInt(ocrValue.value, 10);
+      if (value !== 50 && value !== 20) { alert('ערך חייב להיות 50 או 20'); return; }
+      if (code && vouchers.some(v => v.code === code)) {
+        if (!confirm('שובר עם קוד זה כבר קיים. להוסיף בכל זאת?')) return;
+      }
+      vouchers.push({
+        id: 'v-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+        code: code, value: value, addedAt: Date.now()
+      });
+      saveVouchers(vouchers);
+      renderInventory();
+      renderCalculator();
+      hideOcrModal();
+      toast('שובר נוסף');
+    });
+
+    // ==== Manual add ====
+    const manualModal = document.getElementById('manual-modal');
+    document.getElementById('btn-manual').addEventListener('click', () => {
+      document.getElementById('manual-code').value = '';
+      document.getElementById('manual-value').value = '50';
+      manualModal.classList.add('show');
+    });
+    document.getElementById('manual-cancel').addEventListener('click', () => manualModal.classList.remove('show'));
+    document.getElementById('manual-save').addEventListener('click', () => {
+      const code = document.getElementById('manual-code').value.trim();
+      const value = parseInt(document.getElementById('manual-value').value, 10);
+      if (value !== 50 && value !== 20) { alert('ערך חייב להיות 50 או 20'); return; }
+      if (code && vouchers.some(v => v.code === code)) {
+        if (!confirm('שובר עם קוד זה כבר קיים. להוסיף בכל זאת?')) return;
+      }
+      vouchers.push({
+        id: 'v-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+        code: code, value: value, addedAt: Date.now()
+      });
+      saveVouchers(vouchers);
+      renderInventory();
+      renderCalculator();
+      manualModal.classList.remove('show');
+      toast('שובר נוסף');
+    });
+
     amountInput.addEventListener('input', renderCalculator);
 
-    // Initial render
     renderInventory();
     renderCalculator();
   </script>
