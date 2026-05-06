@@ -233,6 +233,8 @@
       font-weight: 700;
       font-size: 16px;
     }
+    .voucher-badge.v40 { background: #d97706; }
+    .voucher-badge.v30 { background: #16a34a; }
     .voucher-badge.v20 { background: #4a90e2; }
     .voucher-info { flex: 1; min-width: 0; }
     .voucher-code {
@@ -435,16 +437,7 @@
         </div>
 
         <div id="results" style="display: none;">
-          <div class="stats-grid">
-            <div class="stat">
-              <div class="stat-label">שוברי 50 ₪</div>
-              <div class="stat-value" id="v50">0</div>
-            </div>
-            <div class="stat">
-              <div class="stat-label">שוברי 20 ₪</div>
-              <div class="stat-value" id="v20">0</div>
-            </div>
-          </div>
+          <div id="value-breakdown" class="stats-grid"></div>
           <div class="stats-grid">
             <div class="stat">
               <div class="stat-label">סכום בשוברים</div>
@@ -479,12 +472,8 @@
     <div id="tab-inventory" style="display: none;">
       <div class="card">
         <div class="card-title">הוספת שובר חדש</div>
-        <div class="add-options">
-          <button class="add-btn" id="btn-camera">📷 מצלמה</button>
-          <button class="add-btn" id="btn-gallery">🖼️ גלריה</button>
-        </div>
+        <button class="add-btn" id="btn-gallery" style="width: 100%; margin-bottom: 0.5rem;">🖼️ בחר מגלריה</button>
         <button class="btn btn-secondary" id="btn-manual">+ הוספה ידנית</button>
-        <input type="file" id="file-camera" accept="image/*" capture="environment" style="display: none;">
         <input type="file" id="file-gallery" accept="image/*" multiple style="display: none;">
       </div>
 
@@ -517,6 +506,8 @@
           <label>ערך</label>
           <select id="ocr-value" class="value-select">
             <option value="50">50 ₪</option>
+            <option value="40">40 ₪</option>
+            <option value="30">30 ₪</option>
             <option value="20">20 ₪</option>
           </select>
         </div>
@@ -540,6 +531,8 @@
         <label>ערך</label>
         <select id="manual-value" class="value-select">
           <option value="50">50 ₪</option>
+          <option value="40">40 ₪</option>
+          <option value="30">30 ₪</option>
           <option value="20">20 ₪</option>
         </select>
       </div>
@@ -562,7 +555,7 @@
         if (!raw) return [];
         const parsed = JSON.parse(raw);
         if (!Array.isArray(parsed)) return [];
-        return parsed.filter(v => v && (v.value === 50 || v.value === 20));
+        return parsed.filter(v => v && [50, 40, 30, 20].includes(v.value));
       } catch (e) { return []; }
     }
     function saveVouchers(vs) {
@@ -606,9 +599,11 @@
     }
 
     function getCounts() {
-      let c50 = 0, c20 = 0;
-      for (const v of vouchers) { if (v.value === 50) c50++; else if (v.value === 20) c20++; }
-      return { '50': c50, '20': c20 };
+      const counts = { '50': 0, '40': 0, '30': 0, '20': 0 };
+      for (const v of vouchers) {
+        if (counts[v.value] !== undefined) counts[v.value]++;
+      }
+      return counts;
     }
     function getSortedByAge() {
       return [...vouchers].sort((a, b) => (a.addedAt || 0) - (b.addedAt || 0));
@@ -620,34 +615,60 @@
       const all = [];
       const maxF = Math.min(counts['50'], Math.floor(amount / 50) + 1);
       for (let f = 0; f <= maxF; f++) {
-        const remaining = amount - f * 50;
-        if (remaining < 0) break;
-        const tIdeal = Math.floor(remaining / 20);
-        const t = Math.min(counts['20'], tIdeal);
-        const covered = f * 50 + t * 20;
-        if (covered > amount) continue;
-        if (covered > bestCovered) bestCovered = covered;
-        all.push({ fifties: f, twenties: t, covered, pocket: amount - covered });
+        const rem1 = amount - f * 50;
+        if (rem1 < 0) break;
+        const maxFr = Math.min(counts['40'], Math.floor(rem1 / 40) + 1);
+        for (let fr = 0; fr <= maxFr; fr++) {
+          const rem2 = rem1 - fr * 40;
+          if (rem2 < 0) break;
+          const maxTh = Math.min(counts['30'], Math.floor(rem2 / 30) + 1);
+          for (let th = 0; th <= maxTh; th++) {
+            const rem3 = rem2 - th * 30;
+            if (rem3 < 0) break;
+            const tIdeal = Math.floor(rem3 / 20);
+            const t = Math.min(counts['20'], tIdeal);
+            const covered = f * 50 + fr * 40 + th * 30 + t * 20;
+            if (covered > amount) continue;
+            if (covered > bestCovered) bestCovered = covered;
+            all.push({ fifties: f, forties: fr, thirties: th, twenties: t, covered, pocket: amount - covered });
+          }
+        }
       }
       const optimal = all.filter(c => c.covered === bestCovered);
       optimal.sort((a, b) => {
-        const tA = a.fifties + a.twenties, tB = b.fifties + b.twenties;
+        const tA = a.fifties + a.forties + a.thirties + a.twenties;
+        const tB = b.fifties + b.forties + b.thirties + b.twenties;
         if (tA !== tB) return tA - tB;
-        return b.fifties - a.fifties;
+        // Prefer larger denominations
+        if (b.fifties !== a.fifties) return b.fifties - a.fifties;
+        if (b.forties !== a.forties) return b.forties - a.forties;
+        return b.thirties - a.thirties;
       });
       return optimal;
     }
 
     function findUnconstrainedOptimal(amount) {
       if (!Number.isFinite(amount) || amount < 0) return null;
-      let best = { fifties: 0, twenties: 0, covered: -1, pocket: amount };
+      let best = { fifties: 0, forties: 0, thirties: 0, twenties: 0, covered: -1, pocket: amount };
       const maxF = Math.floor(amount / 50) + 1;
       for (let f = 0; f <= maxF; f++) {
-        const remaining = amount - f * 50;
-        if (remaining < 0) break;
-        const t = Math.floor(remaining / 20);
-        const covered = f * 50 + t * 20;
-        if (covered <= amount && covered > best.covered) best = { fifties: f, twenties: t, covered, pocket: amount - covered };
+        const rem1 = amount - f * 50;
+        if (rem1 < 0) break;
+        const maxFr = Math.floor(rem1 / 40) + 1;
+        for (let fr = 0; fr <= maxFr; fr++) {
+          const rem2 = rem1 - fr * 40;
+          if (rem2 < 0) break;
+          const maxTh = Math.floor(rem2 / 30) + 1;
+          for (let th = 0; th <= maxTh; th++) {
+            const rem3 = rem2 - th * 30;
+            if (rem3 < 0) break;
+            const t = Math.floor(rem3 / 20);
+            const covered = f * 50 + fr * 40 + th * 30 + t * 20;
+            if (covered <= amount && covered > best.covered) {
+              best = { fifties: f, forties: fr, thirties: th, twenties: t, covered, pocket: amount - covered };
+            }
+          }
+        }
       }
       return best;
     }
@@ -656,6 +677,8 @@
     function describe(c) {
       const parts = [];
       if (c.fifties > 0) parts.push(c.fifties + ' × 50');
+      if (c.forties > 0) parts.push(c.forties + ' × 40');
+      if (c.thirties > 0) parts.push(c.thirties + ' × 30');
       if (c.twenties > 0) parts.push(c.twenties + ' × 20');
       return parts.length ? parts.join(' + ') : 'ללא שוברים';
     }
@@ -663,17 +686,19 @@
     function pickVouchersForCombo(combo) {
       const sorted = getSortedByAge();
       const picked = [];
-      let n50 = combo.fifties, n20 = combo.twenties;
+      const need = { 50: combo.fifties, 40: combo.forties, 30: combo.thirties, 20: combo.twenties };
       for (const v of sorted) {
-        if (n50 > 0 && v.value === 50) { picked.push(v); n50--; }
-        else if (n20 > 0 && v.value === 20) { picked.push(v); n20--; }
-        if (n50 === 0 && n20 === 0) break;
+        if (need[v.value] > 0) {
+          picked.push(v);
+          need[v.value]--;
+        }
+        if (need[50] === 0 && need[40] === 0 && need[30] === 0 && need[20] === 0) break;
       }
       return picked;
     }
 
     function renderVoucherItem(v, withActions) {
-      const cls = v.value === 20 ? 'v20' : '';
+      const cls = 'v' + v.value;
       const codeDisplay = v.code || '<span style="color:#86868b">ללא קוד</span>';
       const date = v.addedAt ? new Date(v.addedAt).toLocaleDateString('he-IL') : '';
       const actionsHtml = withActions ? `
@@ -725,11 +750,23 @@
       const counts = getCounts();
       const combos = findCombinations(amount, counts);
       const unconstrained = findUnconstrainedOptimal(amount);
-      const best = combos[0] || { fifties: 0, twenties: 0, covered: 0, pocket: amount };
+      const best = combos[0] || { fifties: 0, forties: 0, thirties: 0, twenties: 0, covered: 0, pocket: amount };
       currentBest = best;
 
-      document.getElementById('v50').textContent = best.fifties;
-      document.getElementById('v20').textContent = best.twenties;
+      // Render breakdown only for denominations actually used
+      const breakdown = document.getElementById('value-breakdown');
+      const usedValues = [];
+      if (best.fifties > 0) usedValues.push({ label: '50 ₪', count: best.fifties });
+      if (best.forties > 0) usedValues.push({ label: '40 ₪', count: best.forties });
+      if (best.thirties > 0) usedValues.push({ label: '30 ₪', count: best.thirties });
+      if (best.twenties > 0) usedValues.push({ label: '20 ₪', count: best.twenties });
+      if (usedValues.length === 0) {
+        breakdown.innerHTML = '<div class="stat" style="grid-column: 1 / -1;"><div class="stat-label">שוברים לשימוש</div><div class="stat-value" style="font-size:18px;">אין</div></div>';
+      } else {
+        breakdown.innerHTML = usedValues.map(u =>
+          `<div class="stat"><div class="stat-label">שוברי ${u.label}</div><div class="stat-value">${u.count}</div></div>`
+        ).join('');
+      }
       document.getElementById('covered').textContent = fmt(best.covered);
       document.getElementById('pocket').textContent = fmt(best.pocket);
 
@@ -748,7 +785,8 @@
       }
 
       const vouchersToUseEl = document.getElementById('vouchers-to-use');
-      if (best.fifties > 0 || best.twenties > 0) {
+      const totalVouchers = best.fifties + best.forties + best.thirties + best.twenties;
+      if (totalVouchers > 0) {
         const picked = pickVouchersForCombo(best);
         if (picked.length > 0 && picked.some(v => v.code)) {
           let html = '<div style="font-size: 13px; color: #6e6e73; margin-bottom: 8px;">השוברים הספציפיים להשתמש (FIFO - הישנים קודם):</div>';
@@ -780,7 +818,7 @@
       const others = combos.slice(1);
       if (others.length > 0) {
         let html = '<div style="font-size: 13px; color: #6e6e73; margin-bottom: 8px;">צירופים חלופיים (אותה תוצאה):</div>';
-        for (const c of others) html += `<div class="alt"><span>${describe(c)}</span><span class="alt-meta">${c.fifties + c.twenties} שוברים</span></div>`;
+        for (const c of others) html += `<div class="alt"><span>${describe(c)}</span><span class="alt-meta">${c.fifties + c.forties + c.thirties + c.twenties} שוברים</span></div>`;
         altsEl.innerHTML = html;
       } else {
         altsEl.innerHTML = '';
@@ -789,22 +827,28 @@
 
     function renderInventory() {
       const counts = getCounts();
-      const total = counts['50'] * 50 + counts['20'] * 20;
+      const total = counts['50'] * 50 + counts['40'] * 40 + counts['30'] * 30 + counts['20'] * 20;
       document.getElementById('inv-total').textContent = total.toLocaleString('he-IL') + ' ₪';
 
-      document.getElementById('summary-content').innerHTML = `
-        <div class="stats-grid">
-          <div class="stat">
-            <div class="stat-label">שוברי 50</div>
-            <div class="stat-value">${counts['50']}</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">שוברי 20</div>
-            <div class="stat-value">${counts['20']}</div>
-          </div>
-        </div>
-        <div class="hint" style="margin-top: 8px;">סה"כ ${total.toLocaleString('he-IL')} ₪ במלאי</div>
-      `;
+      // Summary card: only show denominations that exist
+      const summaryStats = [];
+      if (counts['50'] > 0) summaryStats.push({ label: 'שוברי 50', n: counts['50'] });
+      if (counts['40'] > 0) summaryStats.push({ label: 'שוברי 40', n: counts['40'] });
+      if (counts['30'] > 0) summaryStats.push({ label: 'שוברי 30', n: counts['30'] });
+      if (counts['20'] > 0) summaryStats.push({ label: 'שוברי 20', n: counts['20'] });
+
+      let summaryHtml = '';
+      if (summaryStats.length === 0) {
+        summaryHtml = '<div class="empty" style="padding: 0.5rem 0;">אין שוברים במלאי</div>';
+      } else {
+        summaryHtml = '<div class="stats-grid">';
+        for (const s of summaryStats) {
+          summaryHtml += `<div class="stat"><div class="stat-label">${s.label}</div><div class="stat-value">${s.n}</div></div>`;
+        }
+        summaryHtml += '</div>';
+      }
+      summaryHtml += `<div class="hint" style="margin-top: 8px;">סה"כ ${total.toLocaleString('he-IL')} ₪ במלאי</div>`;
+      document.getElementById('summary-content').innerHTML = summaryHtml;
 
       const listEl = document.getElementById('vouchers-list');
       if (vouchers.length === 0) {
@@ -812,17 +856,17 @@
         return;
       }
       const sorted = getSortedByAge();
-      const v50list = sorted.filter(v => v.value === 50);
-      const v20list = sorted.filter(v => v.value === 20);
+      const groups = [50, 40, 30, 20].map(val => ({
+        val,
+        list: sorted.filter(v => v.value === val)
+      }));
 
       let html = '';
-      if (v50list.length > 0) {
-        html += `<div class="group-header">שוברי 50 ₪ (${v50list.length})</div>`;
-        for (const v of v50list) html += renderVoucherItem(v, true);
-      }
-      if (v20list.length > 0) {
-        html += `<div class="group-header">שוברי 20 ₪ (${v20list.length})</div>`;
-        for (const v of v20list) html += renderVoucherItem(v, true);
+      for (const g of groups) {
+        if (g.list.length > 0) {
+          html += `<div class="group-header">שוברי ${g.val} ₪ (${g.list.length})</div>`;
+          for (const v of g.list) html += renderVoucherItem(v, true);
+        }
       }
       listEl.innerHTML = html;
 
@@ -847,7 +891,8 @@
     useBtn.addEventListener('click', () => {
       if (!currentBest) return;
       const counts = getCounts();
-      if (currentBest.fifties > counts['50'] || currentBest.twenties > counts['20']) {
+      if (currentBest.fifties > counts['50'] || currentBest.forties > counts['40'] ||
+          currentBest.thirties > counts['30'] || currentBest.twenties > counts['20']) {
         alert('אין מספיק שוברים במלאי');
         return;
       }
@@ -876,10 +921,8 @@
       }
     });
 
-    // ==== File inputs ====
-    document.getElementById('btn-camera').addEventListener('click', () => document.getElementById('file-camera').click());
+    // ==== File input ====
     document.getElementById('btn-gallery').addEventListener('click', () => document.getElementById('file-gallery').click());
-    document.getElementById('file-camera').addEventListener('change', e => handleFiles(Array.from(e.target.files)));
     document.getElementById('file-gallery').addEventListener('change', e => handleFiles(Array.from(e.target.files)));
 
     // ==== OCR ====
@@ -909,7 +952,6 @@
     }
     function hideOcrModal() {
       ocrModal.classList.remove('show');
-      document.getElementById('file-camera').value = '';
       document.getElementById('file-gallery').value = '';
     }
 
@@ -1042,23 +1084,23 @@
 
       let value = null;
       const valuePatterns = [
-        /(?:₪|ש["׳]ח|ש"ח|שח)\s*([25]0)\b/,
-        /\b([25]0)\s*(?:₪|ש["׳]ח|ש"ח|שח)/,
-        /יתרה[^\d]{0,30}([25]0)\b/,
-        /\b([25]0)\b/
+        /(?:₪|ש["׳]ח|ש"ח|שח)\s*([2345]0)\b/,
+        /\b([2345]0)\s*(?:₪|ש["׳]ח|ש"ח|שח)/,
+        /יתרה[^\d]{0,30}([2345]0)\b/,
+        /\b([2345]0)\b/
       ];
       for (const re of valuePatterns) {
         const m = cleaned.match(re);
         if (m) { value = parseInt(m[1], 10); break; }
       }
-      if (value !== 20 && value !== 50) value = 50;
+      if (![20, 30, 40, 50].includes(value)) value = 50;
       return { code, value };
     }
 
     ocrSave.addEventListener('click', () => {
       const code = ocrCode.value.trim();
       const value = parseInt(ocrValue.value, 10);
-      if (value !== 50 && value !== 20) { alert('ערך חייב להיות 50 או 20'); return; }
+      if (![20, 30, 40, 50].includes(value)) { alert('ערך חייב להיות 20, 30, 40 או 50'); return; }
       if (code && vouchers.some(v => v.code === code)) {
         if (!confirm('שובר עם קוד זה כבר קיים. להוסיף בכל זאת?')) return;
       }
@@ -1085,7 +1127,7 @@
     document.getElementById('manual-save').addEventListener('click', () => {
       const code = document.getElementById('manual-code').value.trim();
       const value = parseInt(document.getElementById('manual-value').value, 10);
-      if (value !== 50 && value !== 20) { alert('ערך חייב להיות 50 או 20'); return; }
+      if (![20, 30, 40, 50].includes(value)) { alert('ערך חייב להיות 20, 30, 40 או 50'); return; }
       if (code && vouchers.some(v => v.code === code)) {
         if (!confirm('שובר עם קוד זה כבר קיים. להוסיף בכל זאת?')) return;
       }
