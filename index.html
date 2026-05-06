@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="שוברים">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="apple-touch-icon" href="icon.png">
+  <link rel="icon" href="icon.png">
+  <title>מחשבון שוברים - תן ביס</title>
+  <style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Heebo", "Arial Hebrew", sans-serif;
+      background: #f5f5f7;
+      color: #1d1d1f;
+      min-height: 100vh;
+      min-height: 100dvh;
+      -webkit-font-smoothing: antialiased;
+    }
+    body {
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+    .app {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 1rem 1rem 2rem;
+    }
+    h1 {
+      font-size: 22px;
+      font-weight: 600;
+      margin: 0.5rem 0 1.25rem;
+      text-align: center;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #6e6e73;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 0 0 0.75rem;
+    }
+    .tabs {
+      display: flex;
+      background: #e8e8ed;
+      border-radius: 10px;
+      padding: 3px;
+      margin-bottom: 1rem;
+    }
+    .tab {
+      flex: 1;
+      padding: 8px 12px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 500;
+      color: #6e6e73;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+    }
+    .tab.active {
+      background: #ffffff;
+      color: #1d1d1f;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .input-row {
+      margin-bottom: 1rem;
+    }
+    .input-row label {
+      display: block;
+      font-size: 13px;
+      color: #6e6e73;
+      margin-bottom: 6px;
+    }
+    input[type="number"] {
+      width: 100%;
+      font-size: 20px;
+      padding: 12px 14px;
+      border: 1px solid #d2d2d7;
+      border-radius: 10px;
+      background: #ffffff;
+      text-align: center;
+      font-family: inherit;
+      color: #1d1d1f;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    input[type="number"]:focus {
+      border-color: #007aff;
+      box-shadow: 0 0 0 3px rgba(0,122,255,0.15);
+    }
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type="number"] { -moz-appearance: textfield; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 0.75rem;
+    }
+    .stat {
+      background: #f5f5f7;
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: #6e6e73;
+      margin-bottom: 4px;
+    }
+    .stat-value {
+      font-size: 26px;
+      font-weight: 600;
+      color: #1d1d1f;
+    }
+    .stat.success { background: #d1f5e0; }
+    .stat.success .stat-value { color: #0e7c3a; }
+    .stat.warning { background: #ffefd5; }
+    .stat.warning .stat-value { color: #b25700; }
+    .stat.danger { background: #ffe0e0; }
+    .stat.danger .stat-value { color: #c62828; }
+
+    .alt {
+      background: #f5f5f7;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .alt-meta {
+      color: #6e6e73;
+      font-size: 13px;
+    }
+
+    .hint {
+      font-size: 13px;
+      color: #6e6e73;
+      text-align: center;
+      margin-top: 0.75rem;
+    }
+
+    .empty {
+      text-align: center;
+      color: #86868b;
+      font-size: 14px;
+      padding: 1.5rem 0;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+      font-weight: 500;
+      border: none;
+      border-radius: 10px;
+      background: #007aff;
+      color: white;
+      cursor: pointer;
+      font-family: inherit;
+      margin-top: 0.5rem;
+      transition: opacity 0.15s;
+    }
+    .btn:active { opacity: 0.7; }
+    .btn:disabled {
+      background: #d2d2d7;
+      color: #86868b;
+      cursor: not-allowed;
+    }
+    .btn-secondary {
+      background: #f5f5f7;
+      color: #007aff;
+    }
+
+    .inventory-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid #f0f0f2;
+    }
+    .inventory-row:last-child { border-bottom: none; }
+    .inventory-label {
+      font-size: 16px;
+      font-weight: 500;
+    }
+    .inventory-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .qty-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid #d2d2d7;
+      background: #ffffff;
+      font-size: 20px;
+      font-weight: 500;
+      color: #1d1d1f;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: inherit;
+      padding: 0;
+    }
+    .qty-btn:active { background: #f5f5f7; }
+    .qty-btn:disabled { opacity: 0.4; }
+    .qty-display {
+      min-width: 40px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .total-bar {
+      background: #007aff;
+      color: white;
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      font-size: 15px;
+    }
+    .total-bar-value {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .insufficient {
+      background: #fff4e5;
+      color: #b25700;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-top: 0.75rem;
+      text-align: center;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      html, body { background: #000000; color: #f5f5f7; }
+      .card { background: #1c1c1e; box-shadow: none; }
+      .card-title { color: #98989d; }
+      .tabs { background: #2c2c2e; }
+      .tab { color: #98989d; }
+      .tab.active { background: #48484a; color: #ffffff; }
+      input[type="number"] { background: #2c2c2e; border-color: #38383a; color: #ffffff; }
+      input[type="number"]:focus { border-color: #0a84ff; }
+      .stat { background: #2c2c2e; }
+      .stat-label { color: #98989d; }
+      .stat-value { color: #ffffff; }
+      .stat.success { background: #0a3d20; }
+      .stat.success .stat-value { color: #4ade80; }
+      .stat.warning { background: #3d2a05; }
+      .stat.warning .stat-value { color: #fbbf24; }
+      .stat.danger { background: #3d0e0e; }
+      .stat.danger .stat-value { color: #f87171; }
+      .alt { background: #2c2c2e; }
+      .alt-meta { color: #98989d; }
+      .hint, .empty { color: #98989d; }
+      .qty-btn { background: #2c2c2e; border-color: #38383a; color: #ffffff; }
+      .qty-btn:active { background: #38383a; }
+      .inventory-row { border-bottom-color: #2c2c2e; }
+      .btn-secondary { background: #2c2c2e; color: #0a84ff; }
+      .insufficient { background: #3d2a05; color: #fbbf24; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>מחשבון שוברים</h1>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="calc">מחשבון</button>
+      <button class="tab" data-tab="inventory">המלאי שלי</button>
+    </div>
+
+    <!-- Calculator Tab -->
+    <div id="tab-calc">
+      <div class="card">
+        <div class="input-row">
+          <label for="amount">סכום החשבון בויקטורי (₪)</label>
+          <input id="amount" type="number" inputmode="decimal" min="0" step="1" placeholder="לדוגמה: 215">
+        </div>
+
+        <div id="results" style="display: none;">
+          <div class="stats-grid">
+            <div class="stat">
+              <div class="stat-label">שוברי 50 ₪</div>
+              <div class="stat-value" id="v50">0</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">שוברי 20 ₪</div>
+              <div class="stat-value" id="v20">0</div>
+            </div>
+          </div>
+          <div class="stats-grid">
+            <div class="stat">
+              <div class="stat-label">סכום בשוברים</div>
+              <div class="stat-value" id="covered">0 ₪</div>
+            </div>
+            <div class="stat" id="pocket-card">
+              <div class="stat-label">מהכיס הפרטי</div>
+              <div class="stat-value" id="pocket">0 ₪</div>
+            </div>
+          </div>
+
+          <div id="insufficient-warning" style="display: none;" class="insufficient"></div>
+
+          <button class="btn" id="use-vouchers" style="display: none;">השתמשתי - הפחת מהמלאי</button>
+
+          <div id="alternatives" style="margin-top: 1rem;"></div>
+
+          <div class="hint" id="hint"></div>
+        </div>
+
+        <div id="empty" class="empty">הכנס סכום כדי לראות את הצירוף הטוב ביותר</div>
+      </div>
+
+      <div class="card" id="inventory-summary">
+        <div class="card-title">המלאי שלי כעת</div>
+        <div id="summary-content"></div>
+      </div>
+    </div>
+
+    <!-- Inventory Tab -->
+    <div id="tab-inventory" style="display: none;">
+      <div class="card">
+        <div class="card-title">ניהול מלאי שוברים</div>
+
+        <div class="inventory-row">
+          <div class="inventory-label">שוברי 50 ₪</div>
+          <div class="inventory-controls">
+            <button class="qty-btn" data-action="dec" data-type="50">−</button>
+            <div class="qty-display" id="inv-50">0</div>
+            <button class="qty-btn" data-action="inc" data-type="50">+</button>
+          </div>
+        </div>
+
+        <div class="inventory-row">
+          <div class="inventory-label">שוברי 20 ₪</div>
+          <div class="inventory-controls">
+            <button class="qty-btn" data-action="dec" data-type="20">−</button>
+            <div class="qty-display" id="inv-20">0</div>
+            <button class="qty-btn" data-action="inc" data-type="20">+</button>
+          </div>
+        </div>
+
+        <div class="total-bar">
+          <span>סה"כ במלאי</span>
+          <span class="total-bar-value" id="inv-total">0 ₪</span>
+        </div>
+
+        <button class="btn btn-secondary" id="reset-inv" style="margin-top: 1rem;">איפוס מלאי</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">טיפ</div>
+        <p style="margin: 0; font-size: 14px; color: #6e6e73; line-height: 1.5;">
+          כל פעם שאתה קונה שוברים בתן ביס, הוסף אותם כאן. כשתשתמש בצירוף במחשבון, האפליקציה תוריד אוטומטית מהמלאי.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'voucher_inventory_v1';
+
+    function loadInventory() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return { '50': 0, '20': 0 };
+        const parsed = JSON.parse(raw);
+        return { '50': Number(parsed['50']) || 0, '20': Number(parsed['20']) || 0 };
+      } catch (e) {
+        return { '50': 0, '20': 0 };
+      }
+    }
+
+    function saveInventory(inv) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(inv));
+      } catch (e) {}
+    }
+
+    let inventory = loadInventory();
+    let currentBest = null;
+
+    // Tab switching
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const target = tab.dataset.tab;
+        document.getElementById('tab-calc').style.display = target === 'calc' ? 'block' : 'none';
+        document.getElementById('tab-inventory').style.display = target === 'inventory' ? 'block' : 'none';
+      });
+    });
+
+    // Inventory controls
+    document.querySelectorAll('.qty-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const type = btn.dataset.type;
+        const action = btn.dataset.action;
+        if (action === 'inc') {
+          inventory[type]++;
+        } else if (action === 'dec' && inventory[type] > 0) {
+          inventory[type]--;
+        }
+        saveInventory(inventory);
+        renderInventory();
+        renderCalculator();
+      });
+    });
+
+    document.getElementById('reset-inv').addEventListener('click', () => {
+      if (confirm('לאפס את כל המלאי?')) {
+        inventory = { '50': 0, '20': 0 };
+        saveInventory(inventory);
+        renderInventory();
+        renderCalculator();
+      }
+    });
+
+    function renderInventory() {
+      document.getElementById('inv-50').textContent = inventory['50'];
+      document.getElementById('inv-20').textContent = inventory['20'];
+      const total = inventory['50'] * 50 + inventory['20'] * 20;
+      document.getElementById('inv-total').textContent = total.toLocaleString('he-IL') + ' ₪';
+
+      // Summary on calc tab
+      const summary = document.getElementById('summary-content');
+      summary.innerHTML = `
+        <div class="stats-grid">
+          <div class="stat">
+            <div class="stat-label">שוברי 50</div>
+            <div class="stat-value">${inventory['50']}</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">שוברי 20</div>
+            <div class="stat-value">${inventory['20']}</div>
+          </div>
+        </div>
+        <div class="hint" style="margin-top: 8px;">סה"כ ${total.toLocaleString('he-IL')} ₪ במלאי</div>
+      `;
+    }
+
+    // Calculator logic — find combinations bounded by inventory
+    function findCombinations(amount, inv) {
+      if (!Number.isFinite(amount) || amount < 0) return [];
+
+      let bestCovered = -1;
+      const all = [];
+
+      const maxF = Math.min(inv['50'], Math.floor(amount / 50) + 1);
+      for (let f = 0; f <= maxF; f++) {
+        const remaining = amount - f * 50;
+        if (remaining < 0) break;
+        const tIdeal = Math.floor(remaining / 20);
+        const t = Math.min(inv['20'], tIdeal);
+        const covered = f * 50 + t * 20;
+        if (covered > amount) continue;
+        if (covered > bestCovered) bestCovered = covered;
+        all.push({ fifties: f, twenties: t, covered, pocket: amount - covered });
+      }
+
+      const optimal = all.filter(c => c.covered === bestCovered);
+      optimal.sort((a, b) => {
+        const totalA = a.fifties + a.twenties;
+        const totalB = b.fifties + b.twenties;
+        if (totalA !== totalB) return totalA - totalB;
+        return b.fifties - a.fifties;
+      });
+      return optimal;
+    }
+
+    // Also compute the unconstrained optimal (ignoring inventory) to detect when inventory is the limiter
+    function findUnconstrainedOptimal(amount) {
+      if (!Number.isFinite(amount) || amount < 0) return null;
+      let best = { fifties: 0, twenties: 0, covered: -1, pocket: amount };
+      const maxF = Math.floor(amount / 50) + 1;
+      for (let f = 0; f <= maxF; f++) {
+        const remaining = amount - f * 50;
+        if (remaining < 0) break;
+        const t = Math.floor(remaining / 20);
+        const covered = f * 50 + t * 20;
+        if (covered <= amount && covered > best.covered) {
+          best = { fifties: f, twenties: t, covered, pocket: amount - covered };
+        }
+      }
+      return best;
+    }
+
+    function fmt(n) {
+      return Math.round(n).toLocaleString('he-IL') + ' ₪';
+    }
+
+    function describe(c) {
+      const parts = [];
+      if (c.fifties > 0) parts.push(c.fifties + ' × 50');
+      if (c.twenties > 0) parts.push(c.twenties + ' × 20');
+      if (parts.length === 0) return 'ללא שוברים';
+      return parts.join(' + ');
+    }
+
+    const amountInput = document.getElementById('amount');
+    const results = document.getElementById('results');
+    const empty = document.getElementById('empty');
+    const useBtn = document.getElementById('use-vouchers');
+    const insufficientWarning = document.getElementById('insufficient-warning');
+
+    function renderCalculator() {
+      const raw = amountInput.value.trim();
+      if (raw === '') {
+        results.style.display = 'none';
+        empty.style.display = 'block';
+        empty.textContent = 'הכנס סכום כדי לראות את הצירוף הטוב ביותר';
+        currentBest = null;
+        return;
+      }
+      const amount = parseFloat(raw);
+      if (!Number.isFinite(amount) || amount < 0) {
+        results.style.display = 'none';
+        empty.style.display = 'block';
+        empty.textContent = 'הכנס סכום תקין';
+        currentBest = null;
+        return;
+      }
+
+      empty.style.display = 'none';
+      results.style.display = 'block';
+
+      const combos = findCombinations(amount, inventory);
+      const unconstrained = findUnconstrainedOptimal(amount);
+
+      const best = combos[0] || { fifties: 0, twenties: 0, covered: 0, pocket: amount };
+      currentBest = best;
+
+      document.getElementById('v50').textContent = best.fifties;
+      document.getElementById('v20').textContent = best.twenties;
+      document.getElementById('covered').textContent = fmt(best.covered);
+      document.getElementById('pocket').textContent = fmt(best.pocket);
+
+      const pocketCard = document.getElementById('pocket-card');
+      pocketCard.classList.remove('success', 'warning', 'danger');
+      if (best.pocket === 0) {
+        pocketCard.classList.add('success');
+      } else if (unconstrained && best.pocket > unconstrained.pocket) {
+        pocketCard.classList.add('danger');
+      } else {
+        pocketCard.classList.add('warning');
+      }
+
+      // Insufficient inventory warning
+      if (unconstrained && best.pocket > unconstrained.pocket) {
+        const extraOutOfPocket = best.pocket - unconstrained.pocket;
+        insufficientWarning.style.display = 'block';
+        insufficientWarning.textContent = `המלאי לא מספיק לצירוף האופטימלי. אם היה לך מספיק שוברים, היית משלם רק ${fmt(unconstrained.pocket)} מהכיס (חסר ${fmt(extraOutOfPocket)}).`;
+      } else {
+        insufficientWarning.style.display = 'none';
+      }
+
+      // Use button
+      if (best.fifties > 0 || best.twenties > 0) {
+        useBtn.style.display = 'block';
+        useBtn.disabled = false;
+        useBtn.textContent = `השתמשתי - הפחת ${describe(best)} מהמלאי`;
+      } else {
+        useBtn.style.display = 'none';
+      }
+
+      // Hint
+      const hint = document.getElementById('hint');
+      if (best.pocket === 0) {
+        hint.textContent = 'מצוין — תשלום מלא בשוברים, בלי לבזבז.';
+      } else if (unconstrained && best.pocket === unconstrained.pocket) {
+        hint.textContent = 'זה המינימום שאי אפשר לכסות בשוברים בלי לבזבז.';
+      } else {
+        hint.textContent = '';
+      }
+
+      // Alternatives
+      const altsEl = document.getElementById('alternatives');
+      const others = combos.slice(1);
+      if (others.length > 0) {
+        let html = '<div style="font-size: 13px; color: #6e6e73; margin-bottom: 8px;">צירופים חלופיים (אותה תוצאה):</div>';
+        for (const c of others) {
+          html += `<div class="alt"><span>${describe(c)}</span><span class="alt-meta">${c.fifties + c.twenties} שוברים</span></div>`;
+        }
+        altsEl.innerHTML = html;
+      } else {
+        altsEl.innerHTML = '';
+      }
+    }
+
+    useBtn.addEventListener('click', () => {
+      if (!currentBest) return;
+      if (currentBest.fifties > inventory['50'] || currentBest.twenties > inventory['20']) {
+        alert('אין מספיק שוברים במלאי');
+        return;
+      }
+      inventory['50'] -= currentBest.fifties;
+      inventory['20'] -= currentBest.twenties;
+      saveInventory(inventory);
+      renderInventory();
+      // Clear amount and show confirmation
+      amountInput.value = '';
+      results.style.display = 'none';
+      empty.style.display = 'block';
+      empty.textContent = '✓ נוכה מהמלאי. הכנס סכום חדש בפעם הבאה.';
+      empty.style.color = '#0e7c3a';
+      setTimeout(() => {
+        empty.style.color = '';
+        empty.textContent = 'הכנס סכום כדי לראות את הצירוף הטוב ביותר';
+      }, 2500);
+    });
+
+    amountInput.addEventListener('input', renderCalculator);
+
+    // Initial render
+    renderInventory();
+    renderCalculator();
+  </script>
+</body>
+</html>
