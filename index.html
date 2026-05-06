@@ -21,7 +21,9 @@
     }
     body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
     .app { max-width: 520px; margin: 0 auto; padding: 1rem 1rem 2rem; }
-    h1 { font-size: 22px; font-weight: 600; margin: 0.5rem 0 1.25rem; text-align: center; }
+    h1 { font-size: 22px; font-weight: 600; margin: 0.5rem 0 0.5rem; text-align: center; }
+    .user-badge { font-size: 12px; color: #6e6e73; text-align: center; margin-bottom: 1rem; }
+    .user-badge strong { color: #1d1d1f; }
     .card { background: #ffffff; border-radius: 16px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
     .card-title { font-size: 13px; font-weight: 600; color: #6e6e73; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 0.75rem; }
     .tabs { display: flex; background: #e8e8ed; border-radius: 10px; padding: 3px; margin-bottom: 1rem; }
@@ -103,15 +105,17 @@
     .sync-indicator.show { opacity: 1; }
     .sync-indicator.error { background: #c62828; }
 
-    .login-screen { max-width: 400px; margin: 5rem auto; padding: 1rem; text-align: center; }
+    .login-screen { max-width: 400px; margin: 4rem auto; padding: 1rem; text-align: center; }
     .login-screen h2 { font-size: 22px; margin: 0 0 0.5rem; }
-    .login-screen p { color: #6e6e73; font-size: 14px; margin: 0 0 1.5rem; }
+    .login-screen p { color: #6e6e73; font-size: 14px; margin: 0 0 1.5rem; line-height: 1.5; }
     .error-msg { color: #c62828; font-size: 13px; margin-top: 0.5rem; min-height: 18px; }
-
-    .config-warning { background: #fff4e5; color: #b25700; padding: 1rem; border-radius: 12px; font-size: 14px; margin-bottom: 1rem; line-height: 1.5; }
+    .info-msg { color: #007aff; font-size: 13px; margin-top: 0.5rem; min-height: 18px; }
+    .config-warning { background: #fff4e5; color: #b25700; padding: 1rem; border-radius: 12px; font-size: 14px; margin-bottom: 1rem; line-height: 1.5; text-align: right; }
 
     @media (prefers-color-scheme: dark) {
       html, body { background: #000000; color: #f5f5f7; }
+      .user-badge { color: #98989d; }
+      .user-badge strong { color: #ffffff; }
       .card { background: #1c1c1e; box-shadow: none; }
       .card-title { color: #98989d; }
       .tabs { background: #2c2c2e; }
@@ -147,7 +151,6 @@
 <body>
   <div class="sync-indicator" id="sync-indicator"></div>
 
-  <!-- Login screen -->
   <div id="login-screen" class="login-screen" style="display: none;">
     <h1>🎫 מחשבון שוברים</h1>
     <div id="config-warning" class="config-warning" style="display: none;">
@@ -155,8 +158,11 @@
       צריך להגדיר את כתובת ה-Supabase והמפתח בקוד ה-HTML. חפש את הסימון <code>YOUR_SUPABASE_URL</code> בקובץ.
     </div>
     <div id="login-content" style="display: none;">
-      <h2 id="login-title">הזן סיסמה</h2>
-      <p id="login-subtitle">הסיסמה משמשת להצפנה ולהגנה על השוברים שלך</p>
+      <h2 id="login-title">כניסה</h2>
+      <p id="login-subtitle">הזן שם משתמש וסיסמה</p>
+      <div class="input-row">
+        <input id="username-input" type="text" placeholder="שם משתמש" autocomplete="username" autocapitalize="off">
+      </div>
       <div class="input-row">
         <input id="password-input" type="password" placeholder="סיסמה" autocomplete="current-password">
       </div>
@@ -164,14 +170,15 @@
         <input id="password-confirm" type="password" placeholder="אימות סיסמה" autocomplete="new-password">
       </div>
       <div class="error-msg" id="login-error"></div>
+      <div class="info-msg" id="login-info"></div>
       <button class="btn" id="login-btn">היכנס</button>
-      <button class="btn btn-secondary" id="logout-btn" style="display: none; margin-top: 1rem;">איפוס סיסמה</button>
+      <button class="btn btn-secondary" id="register-toggle" style="margin-top: 0.75rem;">משתמש חדש? להרשמה</button>
     </div>
   </div>
 
-  <!-- Main app (hidden until login) -->
   <div class="app" id="main-app" style="display: none;">
     <h1>מחשבון שוברים</h1>
+    <div class="user-badge">מחובר כ-<strong id="current-user-display"></strong></div>
 
     <div class="tabs">
       <button class="tab active" data-tab="calc">מחשבון</button>
@@ -230,12 +237,11 @@
           <span class="total-bar-value" id="inv-total">0 ₪</span>
         </div>
         <button class="btn btn-secondary" id="reset-inv" style="margin-top: 1rem;">איפוס מלאי</button>
-        <button class="btn btn-secondary" id="lock-app" style="margin-top: 0.5rem;">🔒 נעל אפליקציה</button>
+        <button class="btn btn-secondary" id="logout-app" style="margin-top: 0.5rem;">🔒 התנתק</button>
       </div>
     </div>
   </div>
 
-  <!-- OCR Modal -->
   <div class="modal-backdrop" id="ocr-modal">
     <div class="modal">
       <div class="modal-title" id="ocr-title">סריקת שובר</div>
@@ -265,7 +271,6 @@
     </div>
   </div>
 
-  <!-- Manual Add Modal -->
   <div class="modal-backdrop" id="manual-modal">
     <div class="modal">
       <div class="modal-title">הוספת שובר ידנית</div>
@@ -289,20 +294,6 @@
     </div>
   </div>
 
-  <!-- Migration Modal -->
-  <div class="modal-backdrop center" id="migration-modal">
-    <div class="modal">
-      <div class="modal-title">העברת מלאי קיים</div>
-      <p style="font-size: 14px; line-height: 1.5; color: #6e6e73;">
-        זוהו <span id="migration-count">0</span> שוברים במכשיר הזה. האם להעלות אותם לדאטהבייס המוצפן?
-      </p>
-      <div class="btn-row" style="margin-top:1rem;">
-        <button class="btn btn-secondary" id="migration-skip">דלג</button>
-        <button class="btn" id="migration-go">העלה</button>
-      </div>
-    </div>
-  </div>
-
   <div class="toast" id="toast"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js"></script>
@@ -310,16 +301,14 @@
     // ===================================================================
     //  ⚠️  הגדרות Supabase - מלא כאן את הערכים שלך  ⚠️
     // ===================================================================
-    const SUPABASE_URL = 'https://dcfesafpgblejztpseyx.supabase.co';   // למשל: 'https://abcdefgh.supabase.co'
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjZmVzYWZwZ2JsZWp6dHBzZXl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwODQ1ODIsImV4cCI6MjA5MzY2MDU4Mn0.slFWlA5rUUz2l4wR8KzchQupn9Mzz2MPEee3wOH4o3s';   // ה-anon public key (מתחיל ב-eyJ...)
+    const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+    const SUPABASE_KEY = 'YOUR_SUPABASE_KEY';
     // ===================================================================
 
-    const STORAGE_KEY = 'voucher_inventory_v3';
-    const PASSWORD_HASH_KEY = 'voucher_pwhash_v1';
-    const SESSION_KEY = 'voucher_session_v1';
-    const OLD_STORAGE_KEY = 'voucher_inventory_v2';
+    const STORAGE_KEY_PREFIX = 'voucher_inventory_v4_';
+    const SESSION_KEY = 'voucher_session_v2';
 
-    // Encryption helpers using Web Crypto API
+    // ===== Encryption =====
     async function deriveKey(password, salt) {
       const enc = new TextEncoder();
       const baseKey = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
@@ -331,17 +320,13 @@
         ['encrypt', 'decrypt']
       );
     }
-
     async function encryptText(text, key) {
       if (!text) return '';
       const iv = crypto.getRandomValues(new Uint8Array(12));
       const enc = new TextEncoder();
       const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(text));
-      const ivB64 = btoa(String.fromCharCode(...iv));
-      const ctB64 = btoa(String.fromCharCode(...new Uint8Array(ct)));
-      return ivB64 + ':' + ctB64;
+      return btoa(String.fromCharCode(...iv)) + ':' + btoa(String.fromCharCode(...new Uint8Array(ct)));
     }
-
     async function decryptText(encrypted, key) {
       if (!encrypted) return '';
       try {
@@ -350,23 +335,25 @@
         const ct = Uint8Array.from(atob(ctB64), c => c.charCodeAt(0));
         const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ct);
         return new TextDecoder().decode(pt);
-      } catch (e) {
-        return '[שגיאת פענוח]';
-      }
+      } catch (e) { return '[שגיאת פענוח]'; }
     }
-
-    async function hashPassword(password) {
+    async function hashPassword(password, username) {
       const enc = new TextEncoder();
-      const data = enc.encode(password + ':voucher-app-salt-v1');
+      const data = enc.encode(password + ':' + username + ':voucher-app-salt-v2');
       const hash = await crypto.subtle.digest('SHA-256', data);
       return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
+    function normalizeUsername(u) {
+      return (u || '').trim().toLowerCase();
+    }
 
-    // App state
+    // ===== State =====
+    let currentUser = null;
     let cryptoKey = null;
     let vouchers = [];
     let currentBest = null;
     let isOnline = navigator.onLine;
+    let registerMode = false;
 
     // ===== Sync indicator =====
     let syncTimer = null;
@@ -379,10 +366,11 @@
       syncTimer = setTimeout(() => el.classList.remove('show'), isError ? 4000 : 1500);
     }
 
-    // ===== Local cache =====
+    // ===== Cache =====
+    function getCacheKey() { return STORAGE_KEY_PREFIX + (currentUser || 'anon'); }
     function loadCache() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
+        const raw = localStorage.getItem(getCacheKey());
         if (!raw) return [];
         const parsed = JSON.parse(raw);
         if (!Array.isArray(parsed)) return [];
@@ -390,10 +378,10 @@
       } catch (e) { return []; }
     }
     function saveCache(vs) {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(vs)); } catch (e) {}
+      try { localStorage.setItem(getCacheKey(), JSON.stringify(vs)); } catch (e) {}
     }
 
-    // ===== Supabase API =====
+    // ===== Supabase =====
     async function sbRequest(method, path, body) {
       const headers = {
         'apikey': SUPABASE_KEY,
@@ -412,47 +400,48 @@
       return text ? JSON.parse(text) : null;
     }
 
-    // ===== Sync logic =====
-    async function fetchFromSupabase() {
-      const rows = await sbRequest('GET', 'vouchers?select=*&order=added_at.asc');
+    // ===== User functions =====
+    async function getUser(username) {
+      const rows = await sbRequest('GET', 'users?select=*&username=eq.' + encodeURIComponent(username));
+      return rows && rows.length > 0 ? rows[0] : null;
+    }
+    async function createUser(username, passwordHash) {
+      await sbRequest('POST', 'users', { username, password_hash: passwordHash });
+    }
+    async function userHasVouchers(username) {
+      const rows = await sbRequest('GET', 'vouchers?select=id&username=eq.' + encodeURIComponent(username) + '&limit=1');
+      return rows && rows.length > 0;
+    }
+
+    // ===== Voucher functions =====
+    async function fetchUserVouchers() {
+      const path = 'vouchers?select=*&username=eq.' + encodeURIComponent(currentUser) + '&order=added_at.asc';
+      const rows = await sbRequest('GET', path);
       const decrypted = [];
       for (const row of rows) {
         const code = row.code ? await decryptText(row.code, cryptoKey) : '';
-        decrypted.push({
-          id: row.id,
-          code: code,
-          value: row.value,
-          addedAt: row.added_at
-        });
+        decrypted.push({ id: row.id, code, value: row.value, addedAt: row.added_at });
       }
       return decrypted;
     }
-
     async function pushVoucher(v) {
       const encryptedCode = v.code ? await encryptText(v.code, cryptoKey) : null;
       await sbRequest('POST', 'vouchers', {
-        id: v.id,
-        code: encryptedCode,
-        value: v.value,
-        added_at: v.addedAt
+        id: v.id, code: encryptedCode, value: v.value, added_at: v.addedAt, username: currentUser
       });
     }
-
     async function deleteVoucher(id) {
-      await sbRequest('DELETE', 'vouchers?id=eq.' + encodeURIComponent(id));
+      await sbRequest('DELETE', 'vouchers?id=eq.' + encodeURIComponent(id) + '&username=eq.' + encodeURIComponent(currentUser));
     }
-
-    async function deleteAllVouchers() {
-      // Use a filter that always matches (id != impossible value)
-      await sbRequest('DELETE', 'vouchers?id=neq.__impossible__');
+    async function deleteAllUserVouchers() {
+      await sbRequest('DELETE', 'vouchers?username=eq.' + encodeURIComponent(currentUser));
     }
 
     async function syncFromCloud() {
       if (!isOnline) return;
       try {
         showSync('🔄 מסנכרן...');
-        const remote = await fetchFromSupabase();
-        vouchers = remote;
+        vouchers = await fetchUserVouchers();
         saveCache(vouchers);
         renderInventory();
         renderCalculator();
@@ -463,25 +452,25 @@
       }
     }
 
-    // ===== Online/offline =====
-    window.addEventListener('online', () => { isOnline = true; syncFromCloud(); });
+    window.addEventListener('online', () => { isOnline = true; if (currentUser) syncFromCloud(); });
     window.addEventListener('offline', () => { isOnline = false; });
 
-    // ===== Login flow =====
+    // ===== Login UI =====
     const loginScreen = document.getElementById('login-screen');
     const mainApp = document.getElementById('main-app');
+    const usernameInput = document.getElementById('username-input');
     const passwordInput = document.getElementById('password-input');
     const passwordConfirm = document.getElementById('password-confirm');
     const passwordConfirmRow = document.getElementById('password-confirm-row');
     const loginTitle = document.getElementById('login-title');
     const loginSubtitle = document.getElementById('login-subtitle');
     const loginError = document.getElementById('login-error');
+    const loginInfo = document.getElementById('login-info');
     const loginBtn = document.getElementById('login-btn');
-    const logoutBtn = document.getElementById('logout-btn');
+    const registerToggle = document.getElementById('register-toggle');
 
     function checkConfig() {
-      if (SUPABASE_URL === 'YOUR_SUPABASE_URL' || SUPABASE_KEY === 'YOUR_SUPABASE_KEY' ||
-          !SUPABASE_URL || !SUPABASE_KEY) {
+      if (SUPABASE_URL === 'YOUR_SUPABASE_URL' || SUPABASE_KEY === 'YOUR_SUPABASE_KEY' || !SUPABASE_URL || !SUPABASE_KEY) {
         document.getElementById('config-warning').style.display = 'block';
         document.getElementById('login-content').style.display = 'none';
         return false;
@@ -490,123 +479,138 @@
       return true;
     }
 
+    function updateLoginMode() {
+      loginError.textContent = '';
+      loginInfo.textContent = '';
+      if (registerMode) {
+        loginTitle.textContent = 'הרשמה';
+        loginSubtitle.textContent = 'בחר שם משתמש וסיסמה. הסיסמה תשמש להצפנת השוברים שלך - אם תשכח אותה לא תוכל לפענח את הנתונים.';
+        passwordConfirmRow.style.display = 'block';
+        loginBtn.textContent = 'הירשם';
+        registerToggle.textContent = 'יש לך משתמש? כניסה';
+      } else {
+        loginTitle.textContent = 'כניסה';
+        loginSubtitle.textContent = 'הזן שם משתמש וסיסמה';
+        passwordConfirmRow.style.display = 'none';
+        loginBtn.textContent = 'היכנס';
+        registerToggle.textContent = 'משתמש חדש? להרשמה';
+      }
+    }
+
     async function showLogin() {
       loginScreen.style.display = 'block';
       mainApp.style.display = 'none';
       if (!checkConfig()) return;
-
-      const existingHash = localStorage.getItem(PASSWORD_HASH_KEY);
-      if (existingHash) {
-        loginTitle.textContent = 'הזן סיסמה';
-        loginSubtitle.textContent = 'נא הזן את הסיסמה שיצרת';
-        passwordConfirmRow.style.display = 'none';
-        logoutBtn.style.display = 'block';
-      } else {
-        loginTitle.textContent = 'יצירת סיסמה';
-        loginSubtitle.textContent = 'בחר סיסמה חזקה. היא תשמש להצפנת השוברים שלך. אם תשכח אותה - לא תוכל לפענח את הנתונים.';
-        passwordConfirmRow.style.display = 'block';
-        logoutBtn.style.display = 'none';
-      }
+      registerMode = false;
+      updateLoginMode();
+      usernameInput.value = '';
       passwordInput.value = '';
       passwordConfirm.value = '';
-      loginError.textContent = '';
-      passwordInput.focus();
+      usernameInput.focus();
     }
 
     function showApp() {
       loginScreen.style.display = 'none';
       mainApp.style.display = 'block';
+      document.getElementById('current-user-display').textContent = currentUser;
     }
+
+    registerToggle.addEventListener('click', () => {
+      registerMode = !registerMode;
+      updateLoginMode();
+    });
 
     async function attemptLogin() {
       loginError.textContent = '';
+      loginInfo.textContent = '';
+      const username = normalizeUsername(usernameInput.value);
       const pwd = passwordInput.value;
+
+      if (!username || username.length < 2) {
+        loginError.textContent = 'שם משתמש קצר מדי (לפחות 2 תווים)';
+        return;
+      }
+      if (!/^[a-z0-9_]+$/.test(username)) {
+        loginError.textContent = 'שם משתמש יכול להכיל רק אותיות לטיניות, מספרים וקו תחתון';
+        return;
+      }
       if (pwd.length < 4) {
-        loginError.textContent = 'הסיסמה קצרה מדי (לפחות 4 תווים)';
+        loginError.textContent = 'סיסמה קצרה מדי (לפחות 4 תווים)';
         return;
       }
 
-      const existingHash = localStorage.getItem(PASSWORD_HASH_KEY);
+      loginBtn.disabled = true;
 
-      if (existingHash) {
-        // Login
-        const hash = await hashPassword(pwd);
-        if (hash !== existingHash) {
-          loginError.textContent = 'סיסמה שגויה';
-          return;
-        }
-        cryptoKey = await deriveKey(pwd, 'voucher-encryption-salt');
-        sessionStorage.setItem(SESSION_KEY, '1');
-        showApp();
-        // Initial render from cache, then sync
-        vouchers = loadCache();
-        renderInventory();
-        renderCalculator();
-        await syncFromCloud();
-      } else {
-        // First-time setup
-        if (pwd !== passwordConfirm.value) {
-          loginError.textContent = 'הסיסמאות לא תואמות';
-          return;
-        }
-        const hash = await hashPassword(pwd);
-        localStorage.setItem(PASSWORD_HASH_KEY, hash);
-        cryptoKey = await deriveKey(pwd, 'voucher-encryption-salt');
-        sessionStorage.setItem(SESSION_KEY, '1');
-        showApp();
+      try {
+        const existingUser = await getUser(username);
 
-        // Check for old data to migrate
-        const oldRaw = localStorage.getItem(OLD_STORAGE_KEY);
-        if (oldRaw) {
-          try {
-            const oldVouchers = JSON.parse(oldRaw);
-            if (Array.isArray(oldVouchers) && oldVouchers.length > 0) {
-              document.getElementById('migration-count').textContent = oldVouchers.length;
-              document.getElementById('migration-modal').classList.add('show');
-              document.getElementById('migration-go').onclick = async () => {
-                document.getElementById('migration-modal').classList.remove('show');
-                showSync('🔄 מעלה ' + oldVouchers.length + ' שוברים...');
-                let added = 0;
-                for (const v of oldVouchers) {
-                  try {
-                    const newV = {
-                      id: v.id || ('v-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8)),
-                      code: v.code || '',
-                      value: v.value,
-                      addedAt: v.addedAt || Date.now()
-                    };
-                    await pushVoucher(newV);
-                    vouchers.push(newV);
-                    added++;
-                  } catch (e) { console.error(e); }
-                }
-                saveCache(vouchers);
-                localStorage.removeItem(OLD_STORAGE_KEY);
-                renderInventory();
-                renderCalculator();
-                showSync('✓ הועלו ' + added + ' שוברים');
-              };
-              document.getElementById('migration-skip').onclick = () => {
-                document.getElementById('migration-modal').classList.remove('show');
-                localStorage.removeItem(OLD_STORAGE_KEY);
-              };
-              return;
-            }
-          } catch (e) {}
+        if (registerMode) {
+          if (existingUser) {
+            loginError.textContent = 'שם המשתמש כבר תפוס. בחר שם אחר או היכנס.';
+            loginBtn.disabled = false;
+            return;
+          }
+          if (pwd !== passwordConfirm.value) {
+            loginError.textContent = 'הסיסמאות לא תואמות';
+            loginBtn.disabled = false;
+            return;
+          }
+
+          // Check if there are existing unowned vouchers (legacy users)
+          // If username matches a user that has vouchers, that's claiming them
+          const hasVouchersForName = await userHasVouchers(username);
+
+          const hash = await hashPassword(pwd, username);
+          await createUser(username, hash);
+
+          currentUser = username;
+          cryptoKey = await deriveKey(pwd, 'voucher-salt-' + username);
+          sessionStorage.setItem(SESSION_KEY, username);
+          showApp();
+
+          if (hasVouchersForName) {
+            showSync('✓ נמצאו ' + 'שוברים קיימים');
+          }
+          await syncFromCloud();
+        } else {
+          if (!existingUser) {
+            loginError.textContent = 'משתמש לא קיים. אם זה משתמש חדש - לחץ "להרשמה".';
+            loginBtn.disabled = false;
+            return;
+          }
+          const hash = await hashPassword(pwd, username);
+          if (hash !== existingUser.password_hash) {
+            loginError.textContent = 'סיסמה שגויה';
+            loginBtn.disabled = false;
+            return;
+          }
+          currentUser = username;
+          cryptoKey = await deriveKey(pwd, 'voucher-salt-' + username);
+          sessionStorage.setItem(SESSION_KEY, username);
+          showApp();
+          vouchers = loadCache();
+          renderInventory();
+          renderCalculator();
+          await syncFromCloud();
         }
-        await syncFromCloud();
+      } catch (err) {
+        console.error(err);
+        loginError.textContent = 'שגיאת חיבור לדאטהבייס';
       }
+      loginBtn.disabled = false;
     }
 
     loginBtn.addEventListener('click', attemptLogin);
-    passwordInput.addEventListener('keydown', e => { if (e.key === 'Enter') attemptLogin(); });
-    passwordConfirm.addEventListener('keydown', e => { if (e.key === 'Enter') attemptLogin(); });
+    [usernameInput, passwordInput, passwordConfirm].forEach(el => {
+      el.addEventListener('keydown', e => { if (e.key === 'Enter') attemptLogin(); });
+    });
 
-    logoutBtn.addEventListener('click', () => {
-      if (!confirm('איפוס סיסמה ימחק את הסיסמה השמורה במכשיר הזה. הנתונים בדאטהבייס לא יימחקו, אבל לא תוכל לפענח אותם בלי הסיסמה המקורית. להמשיך?')) return;
-      localStorage.removeItem(PASSWORD_HASH_KEY);
-      localStorage.removeItem(STORAGE_KEY);
+    document.getElementById('logout-app').addEventListener('click', () => {
+      if (!confirm('להתנתק? תצטרך להזין שוב שם משתמש וסיסמה כדי להיכנס.')) return;
       sessionStorage.removeItem(SESSION_KEY);
+      currentUser = null;
+      cryptoKey = null;
+      vouchers = [];
       showLogin();
     });
 
@@ -619,14 +623,6 @@
         document.getElementById('tab-calc').style.display = target === 'calc' ? 'block' : 'none';
         document.getElementById('tab-inventory').style.display = target === 'inventory' ? 'block' : 'none';
       });
-    });
-
-    // ===== Lock =====
-    document.getElementById('lock-app').addEventListener('click', () => {
-      sessionStorage.removeItem(SESSION_KEY);
-      cryptoKey = null;
-      vouchers = [];
-      showLogin();
     });
 
     // ===== Toast =====
@@ -931,9 +927,7 @@
       const picked = pickVouchersForCombo(currentBest);
       try {
         showSync('🔄 מעדכן...');
-        for (const v of picked) {
-          await deleteVoucher(v.id);
-        }
+        for (const v of picked) await deleteVoucher(v.id);
         const ids = new Set(picked.map(v => v.id));
         vouchers = vouchers.filter(v => !ids.has(v.id));
         saveCache(vouchers);
@@ -955,10 +949,10 @@
     });
 
     document.getElementById('reset-inv').addEventListener('click', async () => {
-      if (!confirm('לאפס את כל המלאי? פעולה זו תמחק את כל השוברים מהדאטהבייס.')) return;
+      if (!confirm('לאפס את כל המלאי שלך? פעולה זו תמחק את כל השוברים מהדאטהבייס.')) return;
       try {
         showSync('🔄 מוחק...');
-        await deleteAllVouchers();
+        await deleteAllUserVouchers();
         vouchers = [];
         saveCache(vouchers);
         renderInventory();
@@ -986,10 +980,7 @@
     const ocrSkip = document.getElementById('ocr-skip');
     const ocrBatchProgress = document.getElementById('ocr-batch-progress');
 
-    let batchQueue = [];
-    let batchIndex = 0;
-    let batchAdded = 0;
-    let ocrWorker = null;
+    let batchQueue = [], batchIndex = 0, batchAdded = 0, ocrWorker = null;
 
     function showOcrModal() {
       ocrModal.classList.add('show');
@@ -1018,11 +1009,8 @@
 
     async function handleFiles(files) {
       if (!files || files.length === 0) return;
-      batchQueue = files;
-      batchIndex = 0;
-      batchAdded = 0;
+      batchQueue = files; batchIndex = 0; batchAdded = 0;
       showOcrModal();
-
       if (files.length > 1) {
         ocrSkip.style.display = 'block';
         ocrBatchProgress.style.display = 'block';
@@ -1030,7 +1018,6 @@
         ocrSkip.style.display = 'none';
         ocrBatchProgress.style.display = 'none';
       }
-
       ocrStatus.innerHTML = '<span class="spinner"></span> טוען מנוע זיהוי טקסט...';
       try {
         ocrWorker = await Tesseract.createWorker(['heb', 'eng'], 1, {
@@ -1055,30 +1042,24 @@
 
     async function processNextInBatch() {
       if (batchIndex >= batchQueue.length) {
-        const added = batchAdded;
-        const total = batchQueue.length;
+        const added = batchAdded, total = batchQueue.length;
         await cleanupBatch();
         hideOcrModal();
         if (total > 1) toast(`נוספו ${added} שוברים מתוך ${total}`);
         else if (added > 0) toast('שובר נוסף');
         return;
       }
-
-      const file = batchQueue[batchIndex];
-      const total = batchQueue.length;
+      const file = batchQueue[batchIndex], total = batchQueue.length;
       if (total > 1) ocrBatchProgress.textContent = `שובר ${batchIndex + 1} מתוך ${total}`;
-
       ocrResult.style.display = 'none';
       ocrSave.disabled = true;
       const url = URL.createObjectURL(file);
       ocrPreview.src = url;
       ocrPreview.style.display = 'block';
       ocrStatus.innerHTML = '<span class="spinner"></span> מעבד את התמונה...';
-
       try {
         const { data } = await ocrWorker.recognize(file);
-        const text = data.text || '';
-        const parsed = parseVoucherText(text);
+        const parsed = parseVoucherText(data.text || '');
         ocrStatus.textContent = parsed.code ? '✓ זוהה בהצלחה. ניתן לערוך לפני שמירה.' : 'לא הצלחתי לזהות אוטומטית. אנא הקלד ידנית.';
         ocrCode.value = parsed.code || '';
         ocrValue.value = String(parsed.value || 50);
@@ -1098,7 +1079,6 @@
       const codeMatch = cleaned.match(/(\d{9})\s*[-–—]\s*(\d{4})/);
       let code = null;
       if (codeMatch) code = codeMatch[1] + '-' + codeMatch[2];
-
       let value = null;
       const valuePatterns = [
         /(?:₪|ש["׳]ח|ש"ח|שח)\s*([2345]0)\b/,
@@ -1117,7 +1097,7 @@
     async function addVoucher(code, value) {
       const newV = {
         id: 'v-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
-        code: code, value: value, addedAt: Date.now() + batchIndex
+        code, value, addedAt: Date.now() + batchIndex
       };
       try {
         await pushVoucher(newV);
