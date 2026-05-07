@@ -72,6 +72,7 @@
     .voucher-badge.v40 { background: #d97706; }
     .voucher-badge.v30 { background: #16a34a; }
     .voucher-badge.v20 { background: #4a90e2; }
+    .voucher-badge.v15 { background: #8b5cf6; }
     .voucher-info { flex: 1; min-width: 0; }
     .voucher-code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 15px; font-weight: 500; letter-spacing: 0.3px; direction: ltr; text-align: left; color: #1d1d1f; cursor: pointer; user-select: all; -webkit-user-select: all; }
     .voucher-meta { font-size: 12px; color: #6e6e73; margin-top: 2px; }
@@ -264,6 +265,7 @@
             <option value="40">40 ₪</option>
             <option value="30">30 ₪</option>
             <option value="20">20 ₪</option>
+            <option value="15">15 ₪</option>
           </select>
         </div>
       </div>
@@ -289,6 +291,7 @@
           <option value="40">40 ₪</option>
           <option value="30">30 ₪</option>
           <option value="20">20 ₪</option>
+          <option value="15">15 ₪</option>
         </select>
       </div>
       <div class="btn-row" style="margin-top:1rem;">
@@ -434,7 +437,7 @@
         if (!raw) return [];
         const parsed = JSON.parse(raw);
         if (!Array.isArray(parsed)) return [];
-        return parsed.filter(v => v && [50, 40, 30, 20].includes(v.value));
+        return parsed.filter(v => v && [50, 40, 30, 20, 15].includes(v.value));
       } catch (e) { return []; }
     }
     function saveCache(vs) {
@@ -747,7 +750,7 @@
 
     // ===== Voucher logic =====
     function getCounts() {
-      const counts = { '50': 0, '40': 0, '30': 0, '20': 0 };
+      const counts = { '50': 0, '40': 0, '30': 0, '20': 0, '15': 0 };
       for (const v of vouchers) { if (counts[v.value] !== undefined) counts[v.value]++; }
       return counts;
     }
@@ -771,30 +774,36 @@
           for (let th = 0; th <= maxTh; th++) {
             const rem3 = rem2 - th * 30;
             if (rem3 < 0) break;
-            const tIdeal = Math.floor(rem3 / 20);
-            const t = Math.min(counts['20'], tIdeal);
-            const covered = f * 50 + fr * 40 + th * 30 + t * 20;
-            if (covered > amount) continue;
-            if (covered > bestCovered) bestCovered = covered;
-            all.push({ fifties: f, forties: fr, thirties: th, twenties: t, covered, pocket: amount - covered });
+            const maxT = Math.min(counts['20'], Math.floor(rem3 / 20) + 1);
+            for (let t = 0; t <= maxT; t++) {
+              const rem4 = rem3 - t * 20;
+              if (rem4 < 0) break;
+              const ftIdeal = Math.floor(rem4 / 15);
+              const ft = Math.min(counts['15'], ftIdeal);
+              const covered = f * 50 + fr * 40 + th * 30 + t * 20 + ft * 15;
+              if (covered > amount) continue;
+              if (covered > bestCovered) bestCovered = covered;
+              all.push({ fifties: f, forties: fr, thirties: th, twenties: t, fifteens: ft, covered, pocket: amount - covered });
+            }
           }
         }
       }
       const optimal = all.filter(c => c.covered === bestCovered);
       optimal.sort((a, b) => {
-        const tA = a.fifties + a.forties + a.thirties + a.twenties;
-        const tB = b.fifties + b.forties + b.thirties + b.twenties;
+        const tA = a.fifties + a.forties + a.thirties + a.twenties + a.fifteens;
+        const tB = b.fifties + b.forties + b.thirties + b.twenties + b.fifteens;
         if (tA !== tB) return tA - tB;
         if (b.fifties !== a.fifties) return b.fifties - a.fifties;
         if (b.forties !== a.forties) return b.forties - a.forties;
-        return b.thirties - a.thirties;
+        if (b.thirties !== a.thirties) return b.thirties - a.thirties;
+        return b.twenties - a.twenties;
       });
       return optimal;
     }
 
     function findUnconstrainedOptimal(amount) {
       if (!Number.isFinite(amount) || amount < 0) return null;
-      let best = { fifties: 0, forties: 0, thirties: 0, twenties: 0, covered: -1, pocket: amount };
+      let best = { fifties: 0, forties: 0, thirties: 0, twenties: 0, fifteens: 0, covered: -1, pocket: amount };
       const maxF = Math.floor(amount / 50) + 1;
       for (let f = 0; f <= maxF; f++) {
         const rem1 = amount - f * 50;
@@ -807,10 +816,15 @@
           for (let th = 0; th <= maxTh; th++) {
             const rem3 = rem2 - th * 30;
             if (rem3 < 0) break;
-            const t = Math.floor(rem3 / 20);
-            const covered = f * 50 + fr * 40 + th * 30 + t * 20;
-            if (covered <= amount && covered > best.covered) {
-              best = { fifties: f, forties: fr, thirties: th, twenties: t, covered, pocket: amount - covered };
+            const maxT = Math.floor(rem3 / 20) + 1;
+            for (let t = 0; t <= maxT; t++) {
+              const rem4 = rem3 - t * 20;
+              if (rem4 < 0) break;
+              const ft = Math.floor(rem4 / 15);
+              const covered = f * 50 + fr * 40 + th * 30 + t * 20 + ft * 15;
+              if (covered <= amount && covered > best.covered) {
+                best = { fifties: f, forties: fr, thirties: th, twenties: t, fifteens: ft, covered, pocket: amount - covered };
+              }
             }
           }
         }
@@ -825,16 +839,17 @@
       if (c.forties > 0) parts.push(c.forties + ' × 40');
       if (c.thirties > 0) parts.push(c.thirties + ' × 30');
       if (c.twenties > 0) parts.push(c.twenties + ' × 20');
+      if (c.fifteens > 0) parts.push(c.fifteens + ' × 15');
       return parts.length ? parts.join(' + ') : 'ללא שוברים';
     }
 
     function pickVouchersForCombo(combo) {
       const sorted = getSortedByAge();
       const picked = [];
-      const need = { 50: combo.fifties, 40: combo.forties, 30: combo.thirties, 20: combo.twenties };
+      const need = { 50: combo.fifties, 40: combo.forties, 30: combo.thirties, 20: combo.twenties, 15: combo.fifteens };
       for (const v of sorted) {
         if (need[v.value] > 0) { picked.push(v); need[v.value]--; }
-        if (need[50] === 0 && need[40] === 0 && need[30] === 0 && need[20] === 0) break;
+        if (need[50] === 0 && need[40] === 0 && need[30] === 0 && need[20] === 0 && need[15] === 0) break;
       }
       return picked;
     }
@@ -899,6 +914,7 @@
       if (best.forties > 0) usedValues.push({ label: '40 ₪', count: best.forties });
       if (best.thirties > 0) usedValues.push({ label: '30 ₪', count: best.thirties });
       if (best.twenties > 0) usedValues.push({ label: '20 ₪', count: best.twenties });
+      if (best.fifteens > 0) usedValues.push({ label: '15 ₪', count: best.fifteens });
       if (usedValues.length === 0) {
         breakdown.innerHTML = '<div class="stat" style="grid-column: 1 / -1;"><div class="stat-label">שוברים לשימוש</div><div class="stat-value" style="font-size:18px;">אין</div></div>';
       } else {
@@ -924,7 +940,7 @@
       }
 
       const vouchersToUseEl = document.getElementById('vouchers-to-use');
-      const totalVouchers = best.fifties + best.forties + best.thirties + best.twenties;
+      const totalVouchers = best.fifties + best.forties + best.thirties + best.twenties + best.fifteens;
       if (totalVouchers > 0) {
         const picked = pickVouchersForCombo(best);
         if (picked.length > 0 && picked.some(v => v.code)) {
@@ -956,7 +972,7 @@
       const others = combos.slice(1);
       if (others.length > 0) {
         let html = '<div style="font-size: 13px; color: #6e6e73; margin-bottom: 8px;">צירופים חלופיים (אותה תוצאה):</div>';
-        for (const c of others) html += `<div class="alt"><span>${describe(c)}</span><span class="alt-meta">${c.fifties + c.forties + c.thirties + c.twenties} שוברים</span></div>`;
+        for (const c of others) html += `<div class="alt"><span>${describe(c)}</span><span class="alt-meta">${c.fifties + c.forties + c.thirties + c.twenties + c.fifteens} שוברים</span></div>`;
         altsEl.innerHTML = html;
       } else {
         altsEl.innerHTML = '';
@@ -965,7 +981,7 @@
 
     function renderInventory() {
       const counts = getCounts();
-      const total = counts['50'] * 50 + counts['40'] * 40 + counts['30'] * 30 + counts['20'] * 20;
+      const total = counts['50'] * 50 + counts['40'] * 40 + counts['30'] * 30 + counts['20'] * 20 + counts['15'] * 15;
       document.getElementById('inv-total').textContent = total.toLocaleString('he-IL') + ' ₪';
 
       const summaryStats = [];
@@ -973,6 +989,7 @@
       if (counts['40'] > 0) summaryStats.push({ label: 'שוברי 40', n: counts['40'] });
       if (counts['30'] > 0) summaryStats.push({ label: 'שוברי 30', n: counts['30'] });
       if (counts['20'] > 0) summaryStats.push({ label: 'שוברי 20', n: counts['20'] });
+      if (counts['15'] > 0) summaryStats.push({ label: 'שוברי 15', n: counts['15'] });
 
       let summaryHtml = '';
       if (summaryStats.length === 0) {
@@ -991,7 +1008,7 @@
         return;
       }
       const sorted = getSortedByAge();
-      const groups = [50, 40, 30, 20].map(val => ({ val, list: sorted.filter(v => v.value === val) }));
+      const groups = [50, 40, 30, 20, 15].map(val => ({ val, list: sorted.filter(v => v.value === val) }));
 
       let html = '';
       for (const g of groups) {
@@ -1030,7 +1047,8 @@
       if (!currentBest) return;
       const counts = getCounts();
       if (currentBest.fifties > counts['50'] || currentBest.forties > counts['40'] ||
-          currentBest.thirties > counts['30'] || currentBest.twenties > counts['20']) {
+          currentBest.thirties > counts['30'] || currentBest.twenties > counts['20'] ||
+          currentBest.fifteens > counts['15']) {
         alert('אין מספיק שוברים במלאי');
         return;
       }
@@ -1190,17 +1208,18 @@
       let code = null;
       if (codeMatch) code = codeMatch[1] + '-' + codeMatch[2];
       let value = null;
+      // Patterns for 15, 20, 30, 40, 50
       const valuePatterns = [
-        /(?:₪|ש["׳]ח|ש"ח|שח)\s*([2345]0)\b/,
-        /\b([2345]0)\s*(?:₪|ש["׳]ח|ש"ח|שח)/,
-        /יתרה[^\d]{0,30}([2345]0)\b/,
-        /\b([2345]0)\b/
+        /(?:₪|ש["׳]ח|ש"ח|שח)\s*(15|[2345]0)\b/,
+        /\b(15|[2345]0)\s*(?:₪|ש["׳]ח|ש"ח|שח)/,
+        /יתרה[^\d]{0,30}(15|[2345]0)\b/,
+        /\b(15|[2345]0)\b/
       ];
       for (const re of valuePatterns) {
         const m = cleaned.match(re);
         if (m) { value = parseInt(m[1], 10); break; }
       }
-      if (![20, 30, 40, 50].includes(value)) value = 50;
+      if (![15, 20, 30, 40, 50].includes(value)) value = 50;
       return { code, value };
     }
 
@@ -1226,7 +1245,7 @@
     ocrSave.addEventListener('click', async () => {
       const code = ocrCode.value.trim();
       const value = parseInt(ocrValue.value, 10);
-      if (![20, 30, 40, 50].includes(value)) { alert('ערך חייב להיות 20, 30, 40 או 50'); return; }
+      if (![15, 20, 30, 40, 50].includes(value)) { alert('ערך חייב להיות 15, 20, 30, 40 או 50'); return; }
       if (code && vouchers.some(v => v.code === code)) {
         if (!confirm('שובר עם קוד זה כבר קיים. להוסיף בכל זאת?')) return;
       }
@@ -1252,7 +1271,7 @@
     document.getElementById('manual-save').addEventListener('click', async () => {
       const code = document.getElementById('manual-code').value.trim();
       const value = parseInt(document.getElementById('manual-value').value, 10);
-      if (![20, 30, 40, 50].includes(value)) { alert('ערך חייב להיות 20, 30, 40 או 50'); return; }
+      if (![15, 20, 30, 40, 50].includes(value)) { alert('ערך חייב להיות 15, 20, 30, 40 או 50'); return; }
       if (code && vouchers.some(v => v.code === code)) {
         if (!confirm('שובר עם קוד זה כבר קיים. להוסיף בכל זאת?')) return;
       }
