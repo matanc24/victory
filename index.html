@@ -169,6 +169,10 @@
       <div id="password-confirm-row" class="input-row" style="display: none;">
         <input id="password-confirm" type="password" placeholder="אימות סיסמה" autocomplete="new-password">
       </div>
+      <label id="remember-row" style="display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; color: #6e6e73; margin-bottom: 0.5rem; cursor: pointer; user-select: none;">
+        <input type="checkbox" id="remember-me" checked style="width: 18px; height: 18px; margin: 0;">
+        זכור אותי במכשיר הזה
+      </label>
       <div class="error-msg" id="login-error"></div>
       <div class="info-msg" id="login-info"></div>
       <button class="btn" id="login-btn">היכנס</button>
@@ -301,8 +305,8 @@
     // ===================================================================
     //  ⚠️  הגדרות Supabase - מלא כאן את הערכים שלך  ⚠️
     // ===================================================================
-    const SUPABASE_URL = 'https://dcfesafpgblejztpseyx.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjZmVzYWZwZ2JsZWp6dHBzZXl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwODQ1ODIsImV4cCI6MjA5MzY2MDU4Mn0.slFWlA5rUUz2l4wR8KzchQupn9Mzz2MPEee3wOH4o3s';
+    const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+    const SUPABASE_KEY = 'YOUR_SUPABASE_KEY';
     // ===================================================================
 
     const STORAGE_KEY_PREFIX = 'voucher_inventory_v4_';
@@ -345,6 +349,62 @@
     }
     function normalizeUsername(u) {
       return (u || '').trim().toLowerCase();
+    }
+
+    // ===== Persistent session =====
+    // We store username + password (encrypted with a device-specific key)
+    // so the user doesn't need to re-login every time they open the app.
+    // The device key is stored in localStorage too, so this is "obfuscation,
+    // not strong security" - protects against casual snooping but not someone
+    // who has full access to the device's storage.
+    const PERSISTENT_SESSION_KEY = 'voucher_persistent_session_v1';
+    const DEVICE_KEY_KEY = 'voucher_device_key_v1';
+
+    function getOrCreateDeviceKey() {
+      let key = localStorage.getItem(DEVICE_KEY_KEY);
+      if (!key) {
+        const arr = new Uint8Array(32);
+        crypto.getRandomValues(arr);
+        key = btoa(String.fromCharCode(...arr));
+        localStorage.setItem(DEVICE_KEY_KEY, key);
+      }
+      return key;
+    }
+
+    async function getDeviceCryptoKey() {
+      const deviceKey = getOrCreateDeviceKey();
+      return deriveKey(deviceKey, 'voucher-device-salt');
+    }
+
+    async function savePersistentSession(username, password) {
+      try {
+        const deviceKey = await getDeviceCryptoKey();
+        const encryptedPwd = await encryptText(password, deviceKey);
+        localStorage.setItem(PERSISTENT_SESSION_KEY, JSON.stringify({
+          username,
+          encryptedPwd
+        }));
+      } catch (e) { console.error('Failed to save session:', e); }
+    }
+
+    async function loadPersistentSession() {
+      try {
+        const raw = localStorage.getItem(PERSISTENT_SESSION_KEY);
+        if (!raw) return null;
+        const { username, encryptedPwd } = JSON.parse(raw);
+        if (!username || !encryptedPwd) return null;
+        const deviceKey = await getDeviceCryptoKey();
+        const password = await decryptText(encryptedPwd, deviceKey);
+        if (!password || password === '[שגיאת פענוח]') return null;
+        return { username, password };
+      } catch (e) {
+        console.error('Failed to load session:', e);
+        return null;
+      }
+    }
+
+    function clearPersistentSession() {
+      localStorage.removeItem(PERSISTENT_SESSION_KEY);
     }
 
     // ===== State =====
@@ -468,6 +528,7 @@
     const loginInfo = document.getElementById('login-info');
     const loginBtn = document.getElementById('login-btn');
     const registerToggle = document.getElementById('register-toggle');
+    const rememberMe = document.getElementById('remember-me');
 
     function checkConfig() {
       if (SUPABASE_URL === 'YOUR_SUPABASE_URL' || SUPABASE_KEY === 'YOUR_SUPABASE_KEY' || !SUPABASE_URL || !SUPABASE_KEY) {
@@ -497,12 +558,63 @@
       }
     }
 
+    async function tryAutoLogin() {
+      if (!checkConfig()) return false;
+      const session = await loadPersistentSession();
+      if (!session) return false;
+
+      // Show "logging in..." state
+      loginScreen.style.display = 'block';
+      mainApp.style.display = 'none';
+      loginTitle.textContent = 'מתחבר...';
+      loginSubtitle.textContent = 'מחובר כ-' + session.username;
+      passwordConfirmRow.style.display = 'none';
+      document.getElementById('remember-row').style.display = 'none';
+      loginError.textContent = '';
+      loginBtn.style.display = 'none';
+      registerToggle.style.display = 'none';
+      usernameInput.parentElement.style.display = 'none';
+      passwordInput.parentElement.style.display = 'none';
+
+      try {
+        const user = await getUser(session.username);
+        if (!user) {
+          // User was deleted from DB
+          clearPersistentSession();
+          return false;
+        }
+        const hash = await hashPassword(session.password, session.username);
+        if (hash !== user.password_hash) {
+          // Password changed in DB
+          clearPersistentSession();
+          return false;
+        }
+        currentUser = session.username;
+        cryptoKey = await deriveKey(session.password, 'voucher-salt-' + session.username);
+        showApp();
+        vouchers = loadCache();
+        renderInventory();
+        renderCalculator();
+        await syncFromCloud();
+        return true;
+      } catch (err) {
+        console.error('Auto-login failed:', err);
+        return false;
+      }
+    }
+
     async function showLogin() {
       loginScreen.style.display = 'block';
       mainApp.style.display = 'none';
       if (!checkConfig()) return;
       registerMode = false;
       updateLoginMode();
+      // Restore visibility (in case auto-login was attempted and failed)
+      loginBtn.style.display = '';
+      registerToggle.style.display = '';
+      usernameInput.parentElement.style.display = '';
+      passwordInput.parentElement.style.display = '';
+      document.getElementById('remember-row').style.display = '';
       usernameInput.value = '';
       passwordInput.value = '';
       passwordConfirm.value = '';
@@ -556,8 +668,6 @@
             return;
           }
 
-          // Check if there are existing unowned vouchers (legacy users)
-          // If username matches a user that has vouchers, that's claiming them
           const hasVouchersForName = await userHasVouchers(username);
 
           const hash = await hashPassword(pwd, username);
@@ -565,7 +675,7 @@
 
           currentUser = username;
           cryptoKey = await deriveKey(pwd, 'voucher-salt-' + username);
-          sessionStorage.setItem(SESSION_KEY, username);
+          if (rememberMe.checked) await savePersistentSession(username, pwd);
           showApp();
 
           if (hasVouchersForName) {
@@ -586,7 +696,7 @@
           }
           currentUser = username;
           cryptoKey = await deriveKey(pwd, 'voucher-salt-' + username);
-          sessionStorage.setItem(SESSION_KEY, username);
+          if (rememberMe.checked) await savePersistentSession(username, pwd);
           showApp();
           vouchers = loadCache();
           renderInventory();
@@ -607,7 +717,7 @@
 
     document.getElementById('logout-app').addEventListener('click', () => {
       if (!confirm('להתנתק? תצטרך להזין שוב שם משתמש וסיסמה כדי להיכנס.')) return;
-      sessionStorage.removeItem(SESSION_KEY);
+      clearPersistentSession();
       currentUser = null;
       cryptoKey = null;
       vouchers = [];
@@ -1159,7 +1269,10 @@
     amountInput.addEventListener('input', renderCalculator);
 
     // ===== Initial state =====
-    showLogin();
+    (async () => {
+      const ok = await tryAutoLogin();
+      if (!ok) showLogin();
+    })();
   </script>
 </body>
 </html>
